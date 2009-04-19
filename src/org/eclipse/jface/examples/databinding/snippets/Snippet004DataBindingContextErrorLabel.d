@@ -11,8 +11,9 @@
  *     Matthew Hall - bug 260329
  ******************************************************************************/
 
-package org.eclipse.jface.examples.databinding.snippets;
+module org.eclipse.jface.examples.databinding.snippets.Snippet004DataBindingContextErrorLabel;
 
+import java.lang.all;
 import org.eclipse.core.databinding.AggregateValidationStatus;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
@@ -38,59 +39,63 @@ import org.eclipse.swt.widgets.Text;
  * @since 3.2
  */
 public class Snippet004DataBindingContextErrorLabel {
-	public static void main(String[] args) {
-		final Display display = new Display();
-		Realm.runWithDefault(SWTObservables.getRealm(display), new Runnable() {
-			public void run() {
-				Shell shell = new Shell(display);
-				shell.setText("Data Binding Snippet 004");
-				shell.setLayout(new GridLayout(2, false));
+    public static void main(String[] args) {
+        Display display = new Display();
+        Realm.runWithDefault(SWTObservables.getRealm(display), dgRunnable( ( Display display_){
+            Shell shell = new Shell(display_);
+            shell.setText("Data Binding Snippet 004");
+            shell.setLayout(new GridLayout(2, false));
 
-				new Label(shell, SWT.NONE).setText("Enter '5' to be valid:");
+            (new Label(shell, SWT.NONE)).setText("Enter '5' to be valid:");
 
-				Text text = new Text(shell, SWT.BORDER);
-				WritableValue value = WritableValue.withValueType(String.class);
-				new Label(shell, SWT.NONE).setText("Error:");
+            Text text = new Text(shell, SWT.BORDER);
+            WritableValue value = WritableValue.withValueType(Class.fromType!(String));
+            (new Label(shell, SWT.NONE)).setText("Error:");
 
-				Label errorLabel = new Label(shell, SWT.BORDER);
-				errorLabel.setForeground(display.getSystemColor(SWT.COLOR_RED));
-				GridDataFactory.swtDefaults().hint(200, SWT.DEFAULT).applyTo(
-						errorLabel);
+            Label errorLabel = new Label(shell, SWT.BORDER);
+            errorLabel.setForeground(display_.getSystemColor(SWT.COLOR_RED));
+            GridDataFactory.swtDefaults().hint(200, SWT.DEFAULT).applyTo(
+                    errorLabel);
 
-				DataBindingContext dbc = new DataBindingContext();
+            DataBindingContext dbc = new DataBindingContext();
 
-				// Bind the text to the value.
-				dbc.bindValue(
-						SWTObservables.observeText(text, SWT.Modify),
-						value,
-						new UpdateValueStrategy().setAfterConvertValidator(new FiveValidator()),
-						null);
+            // Bind the text to the value.
+            dbc.bindValue(
+                    SWTObservables.observeText(text, SWT.Modify),
+                    value,
+                    (new UpdateValueStrategy()).setAfterConvertValidator(new FiveValidator()),
+                    null);
 
-				// Bind the error label to the validation error on the dbc.
-				dbc.bindValue(SWTObservables.observeText(errorLabel),
-						new AggregateValidationStatus(dbc.getBindings(),
-								AggregateValidationStatus.MAX_SEVERITY));
+            // Bind the error label to the validation error on the dbc.
+            dbc.bindValue(SWTObservables.observeText(errorLabel),
+                    new AggregateValidationStatus(dbc.getBindings(),
+                            AggregateValidationStatus.MAX_SEVERITY), null, null);
+                            // DWT: is overloading in newer version
+                            //AggregateValidationStatus.MAX_SEVERITY));
 
-				shell.pack();
-				shell.open();
-				while (!shell.isDisposed()) {
-					if (!display.readAndDispatch())
-						display.sleep();
-				}
-			}
-		});
-		display.dispose();
-	}
+            shell.pack();
+            shell.open();
+            while (!shell.isDisposed()) {
+                if (!display_.readAndDispatch())
+                    display_.sleep();
+            }
+        }, display));
+        display.dispose();
+    }
 
-	/**
-	 * Validator that returns validation errors for any value other than 5.
-	 * 
-	 * @since 3.2
-	 */
-	private static class FiveValidator implements IValidator {
-		public IStatus validate(Object value) {
-			return ("5".equals(value)) ? Status.OK_STATUS : ValidationStatus
-					.error("the value was '" + value + "', not '5'");
-		}
-	}
+    /**
+     * Validator that returns validation errors for any value other than 5.
+     * 
+     * @since 3.2
+     */
+    private static class FiveValidator : IValidator {
+        public IStatus validate(Object value) {
+            return ("5".equals(stringcast(value))) ? Status.OK_STATUS : ValidationStatus
+                    .error(Format("the value was '{}', not '5'", value ));
+        }
+    }
+}
+
+void main( String[] args ){
+    Snippet004DataBindingContextErrorLabel.main( args );
 }
