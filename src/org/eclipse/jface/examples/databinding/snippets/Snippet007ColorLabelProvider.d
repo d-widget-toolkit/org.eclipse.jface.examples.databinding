@@ -61,124 +61,119 @@ public class Snippet007ColorLabelProvider {
         persons.add(new Person("David Gilmour", Person.MALE));
 
         final Display display = new Display();
-        Realm.runWithDefault(SWTObservables.getRealm(display), new Runnable() {
-            public void run() {
-                Shell shell = new Shell(display);
-                shell.setText("Gender Bender");
-                shell.setLayout(new GridLayout());
+        Realm.runWithDefault(SWTObservables.getRealm(display), dgRunnable(() {
+            Shell shell = new Shell(display);
+            shell.setText("Gender Bender");
+            shell.setLayout(new GridLayout());
 
-                Table table = new Table(shell, SWT.SINGLE | SWT.H_SCROLL
-                        | SWT.V_SCROLL | SWT.BORDER);
-                GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
-                table.setLayoutData(gridData);
-                table.setHeaderVisible(true);
-                table.setLinesVisible(true);
-                TableColumn column = new TableColumn(table, SWT.NONE);
-                column.setText("No");
-                column.setWidth(20);
-                column = new TableColumn(table, SWT.NONE);
-                column.setText("Name");
-                column.setWidth(100);
-                final TableViewer viewer = new TableViewer(table);
+            Table table = new Table(shell, SWT.SINGLE | SWT.H_SCROLL
+                    | SWT.V_SCROLL | SWT.BORDER);
+            GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
+            table.setLayoutData(gridData);
+            table.setHeaderVisible(true);
+            table.setLinesVisible(true);
+            TableColumn column = new TableColumn(table, SWT.NONE);
+            column.setText("No");
+            column.setWidth(20);
+            column = new TableColumn(table, SWT.NONE);
+            column.setText("Name");
+            column.setWidth(100);
+            final TableViewer viewer = new TableViewer(table);
 
-                IObservableList observableList = Observables
-                        .staticObservableList(persons);
-                ObservableListContentProvider contentProvider = new ObservableListContentProvider();
+            IObservableList observableList = Observables
+                    .staticObservableList(persons);
+            ObservableListContentProvider contentProvider = new ObservableListContentProvider();
 
-                viewer.setContentProvider(contentProvider);
+            viewer.setContentProvider(contentProvider);
 
-                // this does not have to correspond to the columns in the table,
-                // we just list all attributes that affect the table content.
-                IObservableMap[] attributes = BeansObservables.observeMaps(
-                        contentProvider.getKnownElements(), Person.class,
-                        new String[] { "name", "gender" });
+            // this does not have to correspond to the columns in the table,
+            // we just list all attributes that affect the table content.
+            IObservableMap[] attributes = BeansObservables.observeMaps(
+                    contentProvider.getKnownElements(), Class.fromType!(Person),
+                    [ "name", "gender" ]);
 
-                class ColorLabelProvider extends ObservableMapLabelProvider
-                        implements ITableColorProvider {
-                    Color male = display.getSystemColor(SWT.COLOR_BLUE);
+            class ColorLabelProvider : ObservableMapLabelProvider
+                    , ITableColorProvider {
+                Color male;
+                Color female;
 
-                    Color female = new Color(display, 255, 192, 203);
-
-                    ColorLabelProvider(IObservableMap[] attributes) {
-                        super(attributes);
-                    }
-
-                    // to drive home the point that attributes does not have to
-                    // match
-                    // the columns
-                    // in the table, we change the column text as follows:
-                    public String getColumnText(Object element, int index) {
-                        if (index == 0) {
-                            return Integer
-                                    .toString(persons.indexOf(element) + 1);
-                        }
-                        return ((Person) element).getName();
-                    }
-
-                    public Color getBackground(Object element, int index) {
-                        return null;
-                    }
-
-                    public Color getForeground(Object element, int index) {
-                        if (index == 0)
-                            return null;
-                        Person person = (Person) element;
-                        return (person.getGender() == Person.MALE) ? male
-                                : female;
-                    }
-
-                    public void dispose() {
-                        super.dispose();
-                        female.dispose();
-                    }
+                this(IObservableMap[] attributes) {
+                    super(attributes);
+                    male = display.getSystemColor(SWT.COLOR_BLUE);
+                    female = new Color(display, 255, 192, 203);
                 }
-                viewer.setLabelProvider(new ColorLabelProvider(attributes));
 
-                viewer.setInput(observableList);
-
-                table.getColumn(0).pack();
-
-                Button button = new Button(shell, SWT.PUSH);
-                button.setText("Toggle Gender");
-                button.addSelectionListener(new SelectionAdapter() {
-                    public void widgetSelected(SelectionEvent arg0) {
-                        StructuredSelection selection = (StructuredSelection) viewer
-                                .getSelection();
-                        if (selection != null && !selection.isEmpty()) {
-                            Person person = (Person) selection
-                                    .getFirstElement();
-                            person
-                                    .setGender((person.getGender() == Person.MALE) ? Person.FEMALE
-                                            : Person.MALE);
-                        }
+                // to drive home the point that attributes does not have to
+                // match
+                // the columns
+                // in the table, we change the column text as follows:
+                public String getColumnText(Object element, int index) {
+                    if (index is 0) {
+                        return Integer
+                                .toString(persons.indexOf(element) + 1);
                     }
-                });
+                    return (cast(Person) element).getName();
+                }
 
-                shell.setSize(300, 400);
-                shell.open();
+                public Color getBackground(Object element, int index) {
+                    return null;
+                }
 
-                while (!shell.isDisposed()) {
-                    if (!display.readAndDispatch())
-                        display.sleep();
+                public Color getForeground(Object element, int index) {
+                    if (index is 0)
+                        return null;
+                    Person person = cast(Person) element;
+                    return (person.getGender() is Person.MALE) ? male
+                            : female;
+                }
+
+                public void dispose() {
+                    super.dispose();
+                    female.dispose();
                 }
             }
-        });
+            viewer.setLabelProvider(new ColorLabelProvider(attributes));
+
+            viewer.setInput(cast(Object)observableList);
+
+            table.getColumn(0).pack();
+
+            Button button = new Button(shell, SWT.PUSH);
+            button.setText("Toggle Gender");
+            button.addSelectionListener(new class() SelectionAdapter {
+                public void widgetSelected(SelectionEvent arg0) {
+                    StructuredSelection selection = cast(StructuredSelection) viewer
+                            .getSelection();
+                    if (selection !is null && !selection.isEmpty()) {
+                        Person person = cast(Person) selection
+                                .getFirstElement();
+                        person
+                                .setGender((person.getGender() is Person.MALE) ? Person.FEMALE
+                                        : Person.MALE);
+                    }
+                }
+            });
+
+            shell.setSize(300, 400);
+            shell.open();
+
+            while (!shell.isDisposed()) {
+                if (!display.readAndDispatch())
+                    display.sleep();
+            }
+        }));
         display.dispose();
     }
 
     static class Person {
         static final int MALE = 0;
-
         static final int FEMALE = 1;
-
         private String name;
-
         private int gender;
+        private PropertyChangeSupport changeSupport;
 
-        private PropertyChangeSupport changeSupport = new PropertyChangeSupport(
-                this);
-
-        Person(String name, int gender) {
+        this(String name, int gender) {
+            changeSupport = new PropertyChangeSupport(this);
             this.name = name;
             this.gender = gender;
         }

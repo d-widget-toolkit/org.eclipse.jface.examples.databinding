@@ -44,38 +44,36 @@ public class Snippet008ComputedValue {
      */
     public static void main(String[] args) {
         final Display display = new Display();
-        Realm.runWithDefault(SWTObservables.getRealm(display), new Runnable() {
-            public void run() {
-                Shell shell = new Shell(display);
-                shell.setLayout(new FillLayout());
+        Realm.runWithDefault(SWTObservables.getRealm(display), dgRunnable(() {
+            Shell shell = new Shell(display);
+            shell.setLayout(new FillLayout());
 
-                final UI ui = new UI(shell);
-                final Data data = new Data();
+            final UI ui = new UI(shell);
+            final Data data = new Data();
 
-                // Bind the UI to the Data.
-                DataBindingContext dbc = new DataBindingContext();
-                dbc.bindValue(SWTObservables.observeText(ui.firstName,
-                        SWT.Modify), data.firstName);
-                dbc.bindValue(SWTObservables.observeText(ui.lastName,
-                        SWT.Modify), data.lastName);
+            // Bind the UI to the Data.
+            DataBindingContext dbc = new DataBindingContext();
+            dbc.bindValue(SWTObservables.observeText(ui.firstName,
+                    SWT.Modify), data.firstName, null, null);
+            dbc.bindValue(SWTObservables.observeText(ui.lastName,
+                    SWT.Modify), data.lastName, null, null);
 
-                // Construct the formatted name observable.
-                FormattedName formattedName = new FormattedName(data.firstName,
-                        data.lastName);
+            // Construct the formatted name observable.
+            FormattedName formattedName = new FormattedName(data.firstName,
+                    data.lastName);
 
-                // Bind the formatted name Text to the formatted name
-                // observable.
-                dbc.bindValue(SWTObservables.observeText(ui.formattedName,
-                        SWT.None), formattedName, new UpdateValueStrategy(false, UpdateValueStrategy.POLICY_NEVER), null);
+            // Bind the formatted name Text to the formatted name
+            // observable.
+            dbc.bindValue(SWTObservables.observeText(ui.formattedName,
+                    SWT.None), formattedName, new UpdateValueStrategy(false, UpdateValueStrategy.POLICY_NEVER), null);
 
-                shell.pack();
-                shell.open();
-                while (!shell.isDisposed()) {
-                    if (!display.readAndDispatch())
-                        display.sleep();
-                }
+            shell.pack();
+            shell.open();
+            while (!shell.isDisposed()) {
+                if (!display.readAndDispatch())
+                    display.sleep();
             }
-        });
+        }));
         display.dispose();
     }
 
@@ -93,39 +91,39 @@ public class Snippet008ComputedValue {
      * 
      * @since 3.2
      */
-    static class FormattedName extends ComputedValue {
+    static class FormattedName : ComputedValue {
         private IObservableValue firstName;
 
         private IObservableValue lastName;
 
-        FormattedName(IObservableValue firstName, IObservableValue lastName) {
+        this(IObservableValue firstName, IObservableValue lastName) {
             this.firstName = firstName;
             this.lastName = lastName;
         }
 
         protected Object calculate() {
-            String lastName = (String) this.lastName.getValue();
-            String firstName = (String) this.firstName.getValue();
-            lastName = (lastName != null && lastName.length() > 0) ? lastName
+            String lastName = stringcast( this.lastName.getValue());
+            String firstName = stringcast( this.firstName.getValue());
+            lastName = (lastName !is null && lastName.length() > 0) ? lastName
                     : "[Last Name]";
-            firstName = (firstName != null && firstName.length() > 0) ? firstName
+            firstName = (firstName !is null && firstName.length() > 0) ? firstName
                     : "[First Name]";
 
             StringBuffer buffer = new StringBuffer();
             buffer.append(lastName).append(", ").append(firstName);
 
-            return buffer.toString();
+            return stringcast(buffer.toString());
         }
     }
 
     static class Data {
-        final WritableValue firstName;
+        const WritableValue firstName;
 
-        final WritableValue lastName;
+        const WritableValue lastName;
 
-        Data() {
-            firstName = new WritableValue("", String.class);
-            lastName = new WritableValue("", String.class);
+        this() {
+            firstName = new WritableValue(stringcast(""), Class.fromType!(String));
+            lastName = new WritableValue(stringcast(""), Class.fromType!(String));
         }
     }
 
@@ -134,22 +132,22 @@ public class Snippet008ComputedValue {
      * 
      * @since 3.2
      */
-    static class UI extends Composite {
-        final Text firstName;
+    static class UI : Composite {
+        const Text firstName;
 
-        final Text lastName;
+        const Text lastName;
 
-        final Text formattedName;
+        const Text formattedName;
 
-        UI(Composite parent) {
+        this(Composite parent) {
             super(parent, SWT.NONE);
 
             GridLayoutFactory.swtDefaults().numColumns(2).applyTo(this);
 
-            new Label(this, SWT.NONE).setText("First Name:");
-            new Label(this, SWT.NONE).setText("Last Name");
+            (new Label(this, SWT.NONE)).setText("First Name:");
+            (new Label(this, SWT.NONE)).setText("Last Name");
 
-            GridDataFactory gdf = GridDataFactory.swtDefaults().align(SWT.FILL,
+            GridDataFactory gdf = GridDataFactory.swtDefaults().align_(SWT.FILL,
                     SWT.FILL).grab(true, false);
             firstName = new Text(this, SWT.BORDER);
             gdf.applyTo(firstName);
@@ -158,7 +156,7 @@ public class Snippet008ComputedValue {
             gdf.applyTo(lastName);
 
             gdf = GridDataFactory.swtDefaults().span(2, 1).grab(true, false)
-                    .align(SWT.FILL, SWT.BEGINNING);
+                    .align_(SWT.FILL, SWT.BEGINNING);
             Label label = new Label(this, SWT.NONE);
             label.setText("Formatted Name:");
             gdf.applyTo(label);

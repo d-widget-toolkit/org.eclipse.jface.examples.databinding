@@ -157,7 +157,7 @@ public class Snippet020TreeViewerWithSetFactory {
                 Bean bean = (Bean) selectedItem.getData();
                 TreeItem parentItem = selectedItem.getParentItem();
                 Bean parent;
-                if (parentItem == null)
+                if (parentItem is null)
                     parent = input;
                 else
                     parent = (Bean) parentItem.getData();
@@ -181,10 +181,10 @@ public class Snippet020TreeViewerWithSetFactory {
         pasteButton.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(final SelectionEvent e) {
                 Bean copy = (Bean) clipboard.getValue();
-                if (copy == null)
+                if (copy is null)
                     return;
                 Bean parent = getSelectedBean();
-                if (parent == null)
+                if (parent is null)
                     parent = input;
 
                 Set set = new HashSet(parent.getSet());
@@ -259,7 +259,7 @@ public class Snippet020TreeViewerWithSetFactory {
                 .observeSingleSelection(beanViewer);
         IObservableValue beanSelected = new ComputedValue(bool.TYPE) {
             protected Object calculate() {
-                return bool.valueOf(beanViewerSelection.getValue() != null);
+                return bool.valueOf(beanViewerSelection.getValue() !is null);
             }
         };
         dbc.bindValue(SWTObservables.observeEnabled(addChildBeanButton),
@@ -272,7 +272,7 @@ public class Snippet020TreeViewerWithSetFactory {
         dbc.bindValue(SWTObservables.observeEnabled(pasteButton),
                 new ComputedValue(bool.TYPE) {
                     protected Object calculate() {
-                        return bool.valueOf(clipboard.getValue() != null);
+                        return bool.valueOf(clipboard.getValue() !is null);
                     }
                 });
 
@@ -309,13 +309,13 @@ public class Snippet020TreeViewerWithSetFactory {
         }
 
         public Set getSet() {
-            if (set == null)
+            if (set is null)
                 return null;
             return new HashSet(set);
         }
 
         public void setSet(Set set) {
-            if (set != null)
+            if (set !is null)
                 set = new HashSet(set);
             changeSupport.firePropertyChange("set", this.set, this.set = set);
         }

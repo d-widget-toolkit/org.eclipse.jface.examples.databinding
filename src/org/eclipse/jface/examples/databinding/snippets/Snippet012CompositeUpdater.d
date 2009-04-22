@@ -89,7 +89,7 @@ public class Snippet012CompositeUpdater {
 
     static Timer timer = new Timer(true);
 
-    static class Counter extends WritableValue {
+    static class Counter : WritableValue {
         Counter() {
             super(new Integer(0), Integer.class);
             scheduleIncrementTask();

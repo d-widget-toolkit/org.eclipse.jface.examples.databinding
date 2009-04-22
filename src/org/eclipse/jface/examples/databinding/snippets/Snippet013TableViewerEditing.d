@@ -98,7 +98,7 @@ public class Snippet013TableViewerEditing {
     }
 
     // The data model class. This is normally a persistent class of some sort.
-    static class Person extends AbstractModelObject {
+    static class Person : AbstractModelObject {
         // A property...
         String name = "John Smith";
 
@@ -148,7 +148,7 @@ public class Snippet013TableViewerEditing {
      * 
      * @since 3.3
      */
-    private static class InlineEditingSupport extends
+    private static class InlineEditingSupport :
             ObservableValueEditingSupport {
         private CellEditor cellEditor;
 

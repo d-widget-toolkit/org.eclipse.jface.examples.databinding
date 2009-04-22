@@ -130,7 +130,7 @@ public class Snippet033CrossValidationControlDecoration {
                 (Composite) null, decorationUpdater);
     }
 
-    private static class DateRangeValidator extends MultiValidator {
+    private static class DateRangeValidator : MultiValidator {
         private final IObservableValue start;
         private final IObservableValue end;
         private final String errorMessage;

@@ -19,11 +19,16 @@ import java.beans.PropertyChangeSupport;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.eclipse.core.databinding.beans.BeanProperties;
+//import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.observable.Realm;
 import org.eclipse.core.databinding.observable.list.WritableList;
+import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.jface.databinding.swt.SWTObservables;
-import org.eclipse.jface.databinding.viewers.ViewerSupport;
+//import org.eclipse.jface.databinding.viewers.ViewerSupport;
+import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
+import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
@@ -42,26 +47,27 @@ public class Snippet009TableViewer {
         // In an RCP application, the threading Realm will be set for you
         // automatically by the Workbench. In an SWT application, you can do
         // this once, wrpping your binding method call.
-        Realm.runWithDefault(SWTObservables.getRealm(display), new Runnable() {
-            public void run() {
+        Realm.runWithDefault(SWTObservables.getRealm(display), dgRunnable(() {
 
-                ViewModel viewModel = new ViewModel();
-                Shell shell = new View(viewModel).createShell();
+            ViewModel viewModel = new ViewModel();
+            Shell shell = (new View(viewModel)).createShell();
 
-                // The SWT event loop
-                while (!shell.isDisposed()) {
-                    if (!display.readAndDispatch()) {
-                        display.sleep();
-                    }
+            // The SWT event loop
+            while (!shell.isDisposed()) {
+                if (!display.readAndDispatch()) {
+                    display.sleep();
                 }
             }
-        });
+        }));
     }
 
     // Minimal JavaBeans support
     public static abstract class AbstractModelObject {
-        private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(
+        private PropertyChangeSupport propertyChangeSupport;
+        this(){
+            propertyChangeSupport = new PropertyChangeSupport(
                 this);
+        }
 
         public void addPropertyChangeListener(PropertyChangeListener listener) {
             propertyChangeSupport.addPropertyChangeListener(listener);
@@ -91,11 +97,11 @@ public class Snippet009TableViewer {
     }
 
     // The data model class. This is normally a persistent class of some sort.
-    static class Person extends AbstractModelObject {
+    static class Person : AbstractModelObject {
         // A property...
         String name = "John Smith";
 
-        public Person(String name) {
+        public this(String name) {
             this.name = name;
         }
 
@@ -106,7 +112,7 @@ public class Snippet009TableViewer {
         public void setName(String name) {
             String oldValue = this.name;
             this.name = name;
-            firePropertyChange("name", oldValue, name);
+            firePropertyChange("name", stringcast(oldValue), stringcast(name));
         }
     }
 
@@ -118,8 +124,9 @@ public class Snippet009TableViewer {
     // ro retrieve, this ViewModel just instantiates a model object to edit.
     static class ViewModel {
         // The model to bind
-        private List people = new LinkedList();
-        {
+        private List people;
+        this(){
+            people = new LinkedList();
             people.add(new Person("Steve Northover"));
             people.add(new Person("Grant Gayed"));
             people.add(new Person("Veronika Irvine"));
@@ -139,7 +146,7 @@ public class Snippet009TableViewer {
         private ViewModel viewModel;
         private Table committers;
 
-        public View(ViewModel viewModel) {
+        public this(ViewModel viewModel) {
             this.viewModel = viewModel;
         }
 
@@ -154,9 +161,24 @@ public class Snippet009TableViewer {
 
             // Set up data binding.
             TableViewer peopleViewer = new TableViewer(committers);
-            ViewerSupport.bind(peopleViewer, new WritableList(viewModel
-                    .getPeople(), Person.class), BeanProperties.value(
-                    Person.class, "name"));
+
+            ///ViewerSupport.bind(peopleViewer, new WritableList(viewModel
+            ///        .getPeople(), Class.fromType!(Person)), BeanProperties.value(
+            ///        Class.fromType!(Person), "name"));
+
+            // Create a standard content provider
+            ObservableListContentProvider peopleViewerContentProvider =
+                new ObservableListContentProvider();
+            peopleViewer.setContentProvider(peopleViewerContentProvider);
+
+            // And a standard label provider that maps columns
+            IObservableMap[] attributeMaps = BeansObservables.observeMaps(
+                    peopleViewerContentProvider.getKnownElements(), Class.fromType!(Person),
+                    [ "name" ]);
+            peopleViewer.setLabelProvider(new ObservableMapLabelProvider(attributeMaps));
+
+            // Now set the Viewer's input
+            peopleViewer.setInput(new WritableList(viewModel.getPeople(), Class.fromType!(Person)));
 
             column.pack();
 

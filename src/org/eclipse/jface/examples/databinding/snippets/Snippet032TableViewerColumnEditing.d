@@ -103,7 +103,7 @@ public class Snippet032TableViewerColumnEditing {
     }
 
     // The data model class. This is normally a persistent class of some sort.
-    static class Person extends AbstractModelObject {
+    static class Person : AbstractModelObject {
         // A property...
         String name;
         String firstName;

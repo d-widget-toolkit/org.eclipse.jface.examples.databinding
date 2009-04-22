@@ -58,7 +58,7 @@ public class Snippet031JFaceObservable {
     // In this example, we extend the EventManager class
     // to manage our listeners and we fire a property change
     // event when the object state changes.
-    public static class Person extends EventManager {
+    public static class Person : EventManager {
         // A property...
         String name = "HelloWorld";
 

@@ -122,7 +122,7 @@ public class Snippet029TreeViewerMultiListProperty {
         }
     }
 
-    public static class Catalog extends AbstractModelObject {
+    public static class Catalog : AbstractModelObject {
         private String name;
         private List catalogs = new ArrayList();
         private List items = new ArrayList();
@@ -157,7 +157,7 @@ public class Snippet029TreeViewerMultiListProperty {
         }
     }
 
-    public static class CatalogItem extends AbstractModelObject {
+    public static class CatalogItem : AbstractModelObject {
         private String name;
 
         public CatalogItem(String name) {

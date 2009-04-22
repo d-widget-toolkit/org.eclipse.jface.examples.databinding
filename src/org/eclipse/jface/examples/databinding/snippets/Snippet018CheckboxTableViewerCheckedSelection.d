@@ -144,7 +144,7 @@ public class Snippet018CheckboxTableViewerCheckedSelection {
     }
 
     // The data model class.
-    static class Person extends AbstractModelObject {
+    static class Person : AbstractModelObject {
         private String name;
         private Set friends = new HashSet();
 
@@ -177,7 +177,7 @@ public class Snippet018CheckboxTableViewerCheckedSelection {
     // The ViewModel is responsible for getting the objects to edit from the
     // data access tier. Since this snippet doesn't have any persistent objects
     // to retrieve, this ViewModel just instantiates a model object to edit.
-    static class ViewModel extends AbstractModelObject {
+    static class ViewModel : AbstractModelObject {
         private List people = new ArrayList();
 
         public List getPeople() {
@@ -304,13 +304,13 @@ public class Snippet018CheckboxTableViewerCheckedSelection {
                     InputDialog dlg = new InputDialog(shell, "Add Person",
                             "Enter name:", "<Name>", new IInputValidator() {
                                 public String isValid(String newText) {
-                                    if (newText == null
-                                            || newText.length() == 0)
+                                    if (newText is null
+                                            || newText.length() is 0)
                                         return "Name cannot be empty";
                                     return null;
                                 }
                             });
-                    if (dlg.open() == Window.OK) {
+                    if (dlg.open() is Window.OK) {
                         Person person = new Person();
                         person.setName(dlg.getValue());
                         people.add(person);
@@ -341,7 +341,7 @@ public class Snippet018CheckboxTableViewerCheckedSelection {
 
             IObservableValue personSelected = new ComputedValue(bool.TYPE) {
                 protected Object calculate() {
-                    return bool.valueOf(selectedPerson.getValue() != null);
+                    return bool.valueOf(selectedPerson.getValue() !is null);
                 }
             };
             dbc.bindValue(SWTObservables.observeEnabled(removePersonButton),

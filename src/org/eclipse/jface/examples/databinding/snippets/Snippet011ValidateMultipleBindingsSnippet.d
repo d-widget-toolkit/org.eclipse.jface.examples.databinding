@@ -12,6 +12,7 @@
 module org.eclipse.jface.examples.databinding.snippets.Snippet011ValidateMultipleBindingsSnippet;
 
 import java.lang.all;
+import tango.io.Stdout;
 
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
@@ -41,7 +42,7 @@ import org.eclipse.swt.widgets.Text;
 public class Snippet011ValidateMultipleBindingsSnippet {
     public static void main(String[] args) {
         Realm.runWithDefault(SWTObservables.getRealm(Display.getDefault()),
-                new Runnable() {
+                new class() Runnable {
                     public void run() {
                         Snippet011ValidateMultipleBindingsSnippet.run();
                     }
@@ -56,25 +57,25 @@ public class Snippet011ValidateMultipleBindingsSnippet {
 
         DataBindingContext dbc = new DataBindingContext();
         dbc.bindValue(SWTObservables.observeText(view.text1, SWT.Modify),
-                model.value1, new UpdateValueStrategy()
+                model.value1, (new UpdateValueStrategy())
                         .setAfterConvertValidator(new CrossFieldValidator(
                                 model.value2)), null);
         dbc.bindValue(SWTObservables.observeText(view.text2, SWT.Modify),
-                model.value2, new UpdateValueStrategy()
+                model.value2, (new UpdateValueStrategy())
                         .setAfterConvertValidator(new CrossFieldValidator(
                                 model.value1)), null);
 
         // DEBUG - print to show value change
-        model.value1.addValueChangeListener(new IValueChangeListener() {
+        model.value1.addValueChangeListener(new class() IValueChangeListener {
             public void handleValueChange(ValueChangeEvent event) {
-                System.out.println("Value 1: " + model.value1.getValue());
+                Stdout.formatln("Value 1: {}", model.value1.getValue());
             }
         });
 
         // DEBUG - print to show value change
-        model.value2.addValueChangeListener(new IValueChangeListener() {
+        model.value2.addValueChangeListener(new class() IValueChangeListener {
             public void handleValueChange(ValueChangeEvent event) {
-                System.out.println("Value 2: " + model.value2.getValue());
+                Stdout.formatln("Value 2: {}", model.value2.getValue());
             }
         });
 
@@ -92,7 +93,7 @@ public class Snippet011ValidateMultipleBindingsSnippet {
      * @since 3.2
      * 
      */
-    private static final class CrossFieldValidator implements IValidator {
+    private static final class CrossFieldValidator : IValidator {
         /**
          * 
          */
@@ -101,12 +102,12 @@ public class Snippet011ValidateMultipleBindingsSnippet {
         /**
          * @param model
          */
-        private CrossFieldValidator(IObservableValue other) {
+        private this(IObservableValue other) {
             this.other = other;
         }
 
         public IStatus validate(Object value) {
-            if (!value.equals(other.getValue())) {
+            if (!value.opEquals(other.getValue())) {
                 return ValidationStatus.ok();
             }
             return ValidationStatus.error("values cannot be the same");
@@ -114,15 +115,19 @@ public class Snippet011ValidateMultipleBindingsSnippet {
     }
 
     static class Model {
-        WritableValue value1 = new WritableValue();
-        WritableValue value2 = new WritableValue();
+        WritableValue value1;
+        WritableValue value2;
+        this(){
+            value1 = new WritableValue();
+            value2 = new WritableValue();
+        }
     }
 
     static class View {
         Text text1;
         Text text2;
 
-        View(Composite composite) {
+        this(Composite composite) {
             composite.setLayout(new GridLayout(2, true));
             text1 = new Text(composite, SWT.BORDER);
             text2 = new Text(composite, SWT.BORDER);

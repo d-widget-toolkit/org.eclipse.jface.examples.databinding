@@ -44,7 +44,7 @@ import org.eclipse.swt.widgets.Text;
  * 
  * @since 3.5
  */
-public class Snippet027ExternalValidator extends WizardPage {
+public class Snippet027ExternalValidator : WizardPage {
 
     private Text nameValue;
     private Text emailValue;
@@ -84,7 +84,7 @@ public class Snippet027ExternalValidator extends WizardPage {
         }
     }
 
-    static class Contact extends AbstractModelObject {
+    static class Contact : AbstractModelObject {
         String name;
         String email;
         String phoneNumber;
@@ -126,11 +126,11 @@ public class Snippet027ExternalValidator extends WizardPage {
         }
 
         public IStatus validate() {
-            if (name.indexOf(' ') == -1) {
+            if (name.indexOf(' ') is -1) {
                 return ValidationStatus
                         .error("Please enter both first and last name separated by a space.");
             }
-            if (email.indexOf('@') == -1) {
+            if (email.indexOf('@') is -1) {
                 return ValidationStatus
                 .error("Please enter a valid email address containing '@'.");
             }
@@ -225,7 +225,7 @@ public class Snippet027ExternalValidator extends WizardPage {
         WizardPageSupport.create(this, dbc);
     }
 
-    static class ExternalValidationWizard extends Wizard {
+    static class ExternalValidationWizard : Wizard {
         public void addPages() {
             addPage(new Snippet027ExternalValidator());
         }
@@ -250,7 +250,7 @@ public class Snippet027ExternalValidator extends WizardPage {
 
                 // The SWT event loop
                 Display display = Display.getCurrent();
-                while (dialog.getShell() != null
+                while (dialog.getShell() !is null
                         && !dialog.getShell().isDisposed()) {
                     if (!display.readAndDispatch()) {
                         display.sleep();

@@ -55,7 +55,7 @@ import org.eclipse.swt.widgets.Text;
  * @since 3.2
  * 
  */
-public class Snippet021MultiFieldValidation extends WizardPage {
+public class Snippet021MultiFieldValidation : WizardPage {
 
     private List list_1;
     private List list;
@@ -221,7 +221,7 @@ public class Snippet021MultiFieldValidation extends WizardPage {
             protected IStatus validate() {
                 Integer field1 = (Integer) middleField1.getValue();
                 Integer field2 = (Integer) middleField2.getValue();
-                if (Math.abs(field1.intValue()) % 2 != Math.abs(field2
+                if (Math.abs(field1.intValue()) % 2 !is Math.abs(field2
                         .intValue()) % 2)
                     return ValidationStatus
                             .error("Fields 1 and 2 must be both even or both odd");
@@ -272,7 +272,7 @@ public class Snippet021MultiFieldValidation extends WizardPage {
                                 }
                             }
                         });
-                if (dialog.open() == Window.OK) {
+                if (dialog.open() is Window.OK) {
                     targetAddends.add(Integer.valueOf(dialog.getValue()));
                 }
             }
@@ -303,7 +303,7 @@ public class Snippet021MultiFieldValidation extends WizardPage {
                         .hasNext();) {
                     actualSum += ((Integer) iterator.next()).intValue();
                 }
-                if (sum.intValue() != actualSum)
+                if (sum.intValue() !is actualSum)
                     return ValidationStatus.error("Sum of addends is "
                             + actualSum + ", expecting " + sum);
                 return ValidationStatus.ok();
@@ -320,7 +320,7 @@ public class Snippet021MultiFieldValidation extends WizardPage {
                 modelAddends);
     }
 
-    static class MultiFieldValidationWizard extends Wizard {
+    static class MultiFieldValidationWizard : Wizard {
         public void addPages() {
             addPage(new Snippet021MultiFieldValidation());
         }
@@ -345,7 +345,7 @@ public class Snippet021MultiFieldValidation extends WizardPage {
 
                 // The SWT event loop
                 Display display = Display.getCurrent();
-                while (dialog.getShell() != null
+                while (dialog.getShell() !is null
                         && !dialog.getShell().isDisposed()) {
                     if (!display.readAndDispatch()) {
                         display.sleep();

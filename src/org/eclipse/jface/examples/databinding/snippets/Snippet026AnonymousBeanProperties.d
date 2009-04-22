@@ -113,7 +113,7 @@ public class Snippet026AnonymousBeanProperties {
         }
     }
 
-    public static class ContactGroup extends AbstractModelObject implements
+    public static class ContactGroup : AbstractModelObject ,
             Comparable {
         private String name;
         private Set contacts = new TreeSet();
@@ -123,7 +123,7 @@ public class Snippet026AnonymousBeanProperties {
         }
 
         private String checkNull(String string) {
-            if (string == null)
+            if (string is null)
                 throw new NullPointerException();
             return string;
         }
@@ -160,13 +160,13 @@ public class Snippet026AnonymousBeanProperties {
         }
     }
 
-    public static class Contact extends AbstractModelObject implements
+    public static class Contact : AbstractModelObject ,
             Comparable {
         private String name;
         private String status;
 
         private String checkNull(String string) {
-            if (string == null)
+            if (string is null)
                 throw new NullPointerException();
             return string;
         }
@@ -196,13 +196,13 @@ public class Snippet026AnonymousBeanProperties {
         public int compareTo(Object o) {
             Contact that = (Contact) o;
             int result = this.name.compareTo(that.name);
-            if (result == 0)
+            if (result is 0)
                 result = this.status.compareTo(that.status);
             return result;
         }
     }
 
-    public static class ApplicationModel extends AbstractModelObject {
+    public static class ApplicationModel : AbstractModelObject {
         private Set groups = new TreeSet();
 
         public Set getGroups() {
@@ -223,13 +223,13 @@ public class Snippet026AnonymousBeanProperties {
      * own property to apply set changes incrementally through the addContact
      * and removeContact methods.
      */
-    public static class ContactGroupContactsProperty extends SimpleSetProperty {
+    public static class ContactGroupContactsProperty : SimpleSetProperty {
         public Object getElementType() {
             return Contact.class;
         }
 
         protected Set doGetSet(Object source) {
-            if (source == null)
+            if (source is null)
                 return Collections.EMPTY_SET;
             return ((ContactGroup) source).getContacts();
         }
@@ -251,7 +251,7 @@ public class Snippet026AnonymousBeanProperties {
             return new Listener(this, listener);
         }
 
-        private class Listener extends NativePropertyListener implements
+        private class Listener : NativePropertyListener ,
                 PropertyChangeListener {
             Listener(IProperty property, ISimplePropertyListener listener) {
                 super(property, listener);

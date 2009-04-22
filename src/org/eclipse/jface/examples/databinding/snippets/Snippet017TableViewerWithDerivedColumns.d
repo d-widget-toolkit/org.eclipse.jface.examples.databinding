@@ -103,7 +103,7 @@ public class Snippet017TableViewerWithDerivedColumns {
     private static Person UNKNOWN = new Person("unknown", null, null);
 
     // The data model class. This is normally a persistent class of some sort.
-    static class Person extends AbstractModelObject {
+    static class Person : AbstractModelObject {
         // A property...
         String name = "Donald Duck";
         Person mother;
@@ -245,7 +245,7 @@ public class Snippet017TableViewerWithDerivedColumns {
             peopleViewer.addFilter(new ViewerFilter() {
                 public bool select(Viewer viewer, Object parentElement,
                         Object element) {
-                    return element != UNKNOWN;
+                    return element !is UNKNOWN;
                 }
             });
 

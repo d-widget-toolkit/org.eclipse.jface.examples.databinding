@@ -44,11 +44,11 @@ import org.eclipse.swt.widgets.Text;
  */
 public class Snippet014WizardDialog {
 
-    static class FirstWizardPage extends WizardPage {
-        private final class SingleDigitValidator implements IValidator {
+    static class FirstWizardPage : WizardPage {
+        private final class SingleDigitValidator : IValidator {
             public IStatus validate(Object value) {
                 Integer i = (Integer) value;
-                if (i == null) {
+                if (i is null) {
                     return ValidationStatus
                             .info("Please enter a value.");
                 }
@@ -85,7 +85,7 @@ public class Snippet014WizardDialog {
         }
     }
 
-    static class SecondWizardPage extends WizardPage {
+    static class SecondWizardPage : WizardPage {
         protected SecondWizardPage() {
             super("Second", "Second Page", ImageDescriptor
                     .createFromImage(new Image(Display.getDefault(), 16, 16)));
@@ -114,7 +114,7 @@ public class Snippet014WizardDialog {
         IObservableValue dateValue = new WritableValue(null, Date.class);
     }
 
-    static class SampleWizard extends Wizard {
+    static class SampleWizard : Wizard {
 
         private SampleWizardModel model = new SampleWizardModel();
 
@@ -150,7 +150,7 @@ public class Snippet014WizardDialog {
                 dialog.open();
                 // The SWT event loop
                 Display display = Display.getCurrent();
-                while (dialog.getShell() != null
+                while (dialog.getShell() !is null
                         && !dialog.getShell().isDisposed()) {
                     if (!display.readAndDispatch()) {
                         display.sleep();

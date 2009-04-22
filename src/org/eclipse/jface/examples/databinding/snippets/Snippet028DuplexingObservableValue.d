@@ -189,7 +189,7 @@ public class Snippet028DuplexingObservableValue {
         }
     }
 
-    public static class MovieInfo extends AbstractModelObject {
+    public static class MovieInfo : AbstractModelObject {
         private String title;
         private String releaseDate;
         private String director;

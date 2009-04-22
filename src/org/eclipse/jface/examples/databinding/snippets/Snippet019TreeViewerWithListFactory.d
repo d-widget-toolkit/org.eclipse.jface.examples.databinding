@@ -155,7 +155,7 @@ public class Snippet019TreeViewerWithListFactory {
                 TreeItem parentItem = selectedItem.getParentItem();
                 Bean parent;
                 int index;
-                if (parentItem == null) {
+                if (parentItem is null) {
                     parent = input;
                     index = beanViewer.getTree().indexOf(selectedItem);
                 } else {
@@ -182,10 +182,10 @@ public class Snippet019TreeViewerWithListFactory {
         pasteButton.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(final SelectionEvent e) {
                 Bean copy = (Bean) clipboard.getValue();
-                if (copy == null)
+                if (copy is null)
                     return;
                 Bean parent = getSelectedBean();
-                if (parent == null)
+                if (parent is null)
                     parent = input;
 
                 List list = new ArrayList(parent.getList());
@@ -259,7 +259,7 @@ public class Snippet019TreeViewerWithListFactory {
                 .observeSingleSelection(beanViewer);
         IObservableValue beanSelected = new ComputedValue(bool.TYPE) {
             protected Object calculate() {
-                return bool.valueOf(beanViewerSelection.getValue() != null);
+                return bool.valueOf(beanViewerSelection.getValue() !is null);
             }
         };
         dbc.bindValue(SWTObservables.observeEnabled(addChildBeanButton),
@@ -272,7 +272,7 @@ public class Snippet019TreeViewerWithListFactory {
         dbc.bindValue(SWTObservables.observeEnabled(pasteButton),
                 new ComputedValue(bool.TYPE) {
                     protected Object calculate() {
-                        return bool.valueOf(clipboard.getValue() != null);
+                        return bool.valueOf(clipboard.getValue() !is null);
                     }
                 });
 
@@ -309,13 +309,13 @@ public class Snippet019TreeViewerWithListFactory {
         }
 
         public List getList() {
-            if (list == null)
+            if (list is null)
                 return null;
             return new ArrayList(list);
         }
 
         public void setList(List list) {
-            if (list != null)
+            if (list !is null)
                 list = new ArrayList(list);
             changeSupport.firePropertyChange("list", this.list,
                     this.list = list);
