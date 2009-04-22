@@ -10,7 +10,10 @@
  *     Brad Reynolds - bug 116920
  *******************************************************************************/
 
-package org.eclipse.jface.examples.databinding.snippets;
+module org.eclipse.jface.examples.databinding.snippets.Snippet006Spreadsheet;
+
+import java.lang.all;
+import tango.io.Stdout;
 
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -43,273 +46,313 @@ import org.eclipse.swt.widgets.Text;
  */
 public class Snippet006Spreadsheet {
 
-	private static final int COUNTER_UPDATE_DELAY = 1000;
+    private static const int COUNTER_UPDATE_DELAY = 1000;
 
-	private static final int NUM_COLUMNS = 6;
+    private static const int NUM_COLUMNS = 6;
 
-	private static final int NUM_ROWS = 16;
+    private static const int NUM_ROWS = 16;
 
-	/**
-	 * 0 for no output, 1 for some, 2 for more
-	 */
-	private static int DEBUG_LEVEL = 0;
+    /**
+     * 0 for no output, 1 for some, 2 for more
+     */
+    private static int DEBUG_LEVEL = 0;
 
-	/**
-	 * If true, there will be a automatic counter at B1.
-	 */
-	private static boolean FUNKY_COUNTER = false;
+    /**
+     * If true, there will be a automatic counter at B1.
+     */
+    private static bool FUNKY_COUNTER = false;
 
-	/**
-	 * // * If true, all formulas (except for row 1 and column A) will be the
-	 * sum of the values of their left and top neighbouring cells.
-	 */
-	private static boolean FUNKY_FORMULAS = true;
+    /**
+     * // * If true, all formulas (except for row 1 and column A) will be the
+     * sum of the values of their left and top neighbouring cells.
+     */
+    private static bool FUNKY_FORMULAS = true;
 
-	static WritableValue[][] cellFormulas = new WritableValue[NUM_ROWS][NUM_COLUMNS];
+    static WritableValue[][] cellFormulas;
 
-	static ComputedValue[][] cellValues = new ComputedValue[NUM_ROWS][NUM_COLUMNS];
+    static ComputedValue[][] cellValues;
 
-	static class ComputedCellValue extends ComputedValue {
-		private final IObservableValue cellFormula;
+    static this(){
+        cellFormulas = new WritableValue[][](NUM_ROWS,NUM_COLUMNS);
+        cellValues = new ComputedValue[][](NUM_ROWS,NUM_COLUMNS);
+    }
 
-		private boolean calculating;
+    static class ComputedCellValue : ComputedValue {
+        private const IObservableValue cellFormula;
 
-		ComputedCellValue(IObservableValue cellFormula) {
-			this.cellFormula = cellFormula;
-		}
+        private bool calculating;
 
-		protected Object calculate() {
-			if (calculating) {
-				return "#cycle";
-			}
-			try {
-				calculating = true;
-				return evaluate(cellFormula.getValue());
-			} finally {
-				calculating = false;
-			}
-		}
+        this(IObservableValue cellFormula) {
+            this.cellFormula = cellFormula;
+        }
 
-		private Object evaluate(Object value) {
-			if (DEBUG_LEVEL >= 2) {
-				System.out.println("evaluating " + this + " ...");
-			}
-			if (value == null) {
-				return "";
-			}
-			try {
-				String s = (String) value;
-				if (!s.startsWith("=")) {
-					return s;
-				}
-				String addition = s.substring(1);
-				int indexOfPlus = addition.indexOf('+');
-				String operand1 = addition.substring(0, indexOfPlus);
-				double value1 = eval(operand1);
-				String operand2 = addition.substring(indexOfPlus + 1);
-				double value2 = eval(operand2);
-				return NumberFormat.getNumberInstance().format(value1 + value2);
-			} catch (Exception ex) {
-				return ex.getMessage();
-			}
-		}
+        protected Object calculate() {
+            if (calculating) {
+                return stringcast("#cycle");
+            }
+            try {
+                calculating = true;
+                return evaluate(cellFormula.getValue());
+            } finally {
+                calculating = false;
+            }
+        }
 
-		/**
-		 * @param s
-		 * @return
-		 * @throws ParseException
-		 */
-		private double eval(String s) throws ParseException {
-			if (s.length() == 0) {
-				return 0;
-			}
-			char character = s.charAt(0);
-			if (Character.isLetter(character)) {
-				character = Character.toLowerCase(character);
-				// reference to other cell
-				int columnIndex = character - 'a';
-				int rowIndex = 0;
-				rowIndex = NumberFormat.getNumberInstance().parse(
-						s.substring(1)).intValue() - 1;
-				String value = (String) cellValues[rowIndex][columnIndex]
-						.getValue();
-				return value.length() == 0 ? 0 : NumberFormat
-						.getNumberInstance().parse(value).doubleValue();
-			}
-			return NumberFormat.getNumberInstance().parse(s).doubleValue();
-		}
-	}
+        private Object evaluate(Object value) {
+            if (DEBUG_LEVEL >= 2) {
+                Stdout.formatln("evaluating {} ...", this);
+            }
+            if (value is null) {
+                return stringcast("");
+            }
+            try {
+                String s = stringcast( value );
+                if (!s.startsWith("=")) {
+                    return stringcast(s);
+                }
+                String addition = s.substring(1);
+                int indexOfPlus = addition.indexOf('+');
+                String operand1 = addition.substring(0, indexOfPlus);
+                double value1 = eval(operand1);
+                String operand2 = addition.substring(indexOfPlus + 1);
+                double value2 = eval(operand2);
+                return stringcast(NumberFormat.getNumberInstance().format(value1 + value2));
+            } catch (Exception ex) {
+                return stringcast(ex.msg);
+            }
+        }
 
-	protected static int counter;
+        /**
+         * @param s
+         * @return
+         * @throws ParseException
+         */
+        private double eval(String s) {
+            if (s.length() is 0) {
+                return 0;
+            }
+            dchar character = s.charAt(0);
+            if (Character.isLetter(character)) {
+                character = Character.toLowerCase(character);
+                // reference to other cell
+                int columnIndex = character - 'a';
+                int rowIndex = 0;
+                rowIndex = NumberFormat.getNumberInstance().parse(
+                        s.substring(1)).intValue() - 1;
+                String value = stringcast( cellValues[rowIndex][columnIndex]
+                        .getValue());
+                return value.length() is 0 ? 0 : NumberFormat
+                        .getNumberInstance().parse(value).doubleValue();
+            }
+            return NumberFormat.getNumberInstance().parse(s).doubleValue();
+        }
+    }
 
-	public static void main(String[] args) {
+    protected static int counter;
+    static class LocalTableUpdater : TableUpdater {
+        this( Table t, WritableList l ){
+            super( t, l );
+        }
+        protected void updateItem(int rowIndex, TableItem item, Object element) {
+            if (DEBUG_LEVEL >= 1) {
+                Stdout.formatln("updating row {}", rowIndex);
+            }
+            for (int j = 0; j < NUM_COLUMNS; j++) {
+                item.setText(j, stringcast( cellValues[rowIndex][j]
+                        .getValue()));
+            }
+        }
+    }
+    static class CursorSelectionListener : SelectionAdapter {
+        TableCursor cursor;
+        Table table;
+        ControlEditor editor;
 
-		final Display display = new Display();
-		Realm.runWithDefault(SWTObservables.getRealm(display), new Runnable() {
-			public void run() {
-				Shell shell = new Shell(display);
-				shell.setText("Data Binding Snippet 006");
+        this(TableCursor c, Table t,ControlEditor e){
+            cursor = c;
+            table = t;
+            editor = e;
+        }
+        // when the TableEditor is over a cell, select the
+        // corresponding row
+        // in
+        // the table
+        public void widgetSelected(SelectionEvent e) {
+            table.setSelection([ cursor.getRow() ]);
+        }
 
-				final Table table = new Table(shell, SWT.BORDER | SWT.MULTI
-						| SWT.FULL_SELECTION | SWT.VIRTUAL);
-				table.setLinesVisible(true);
-				table.setHeaderVisible(true);
+        // when the user hits "ENTER" in the TableCursor, pop up a
+        // text
+        // editor so that
+        // they can change the text of the cell
+        public void widgetDefaultSelected(SelectionEvent e) {
+            final Text text = new Text(cursor, SWT.NONE);
+            TableItem row = cursor.getRow();
+            int rowIndex = table.indexOf(row);
+            int columnIndex = cursor.getColumn();
+            text
+                    .setText(stringcast( cellFormulas[rowIndex][columnIndex]
+                            .getValue()));
+            text.addKeyListener(new TextKeyListener(table, cursor, text ));
+            editor.setEditor(text);
+            text.setFocus();
+        }
+    }
+    static class TextKeyListener : KeyAdapter {
+        Table table;
+        TableCursor cursor;
+        Text text;
+        this(Table t, TableCursor c, Text t2){
+            cursor = c;
+            table = t;
+            text = t2;
+        }
+        public void keyPressed(KeyEvent e) {
+            // close the text editor and copy the data over
+            // when the user hits "ENTER"
+            if (e.character is SWT.CR) {
+                TableItem row = cursor.getRow();
+                int rowIndex = table.indexOf(row);
+                int columnIndex = cursor.getColumn();
+                cellFormulas[rowIndex][columnIndex]
+                    .setValue(stringcast(text.getText()));
+                text.dispose();
+            }
+            // close the text editor when the user hits
+            // "ESC"
+            if (e.character is SWT.ESC) {
+                text.dispose();
+            }
+        }
+    }
+    static class CursorKeyListener : KeyAdapter {
+        TableCursor cursor;
+        this(TableCursor c){
+            cursor = c;
+        }
+        public void keyPressed(KeyEvent e) {
+            if (e.keyCode is SWT.MOD1 || e.keyCode is SWT.MOD2
+                    || (e.stateMask & SWT.MOD1) !is 0
+                    || (e.stateMask & SWT.MOD2) !is 0) {
+                cursor.setVisible(false);
+            }
+        }
+    }
+    static class TableKeyListener : KeyAdapter {
+        Table table;
+        TableCursor cursor;
+        this(Table t, TableCursor c){
+            cursor = c;
+            table = t;
+        }
+        public void keyReleased(KeyEvent e) {
+            if (e.keyCode is SWT.MOD1
+                    && (e.stateMask & SWT.MOD2) !is 0)
+                return;
+            if (e.keyCode is SWT.MOD2
+                    && (e.stateMask & SWT.MOD1) !is 0)
+                return;
+            if (e.keyCode !is SWT.MOD1
+                    && (e.stateMask & SWT.MOD1) !is 0)
+                return;
+            if (e.keyCode !is SWT.MOD2
+                    && (e.stateMask & SWT.MOD2) !is 0)
+                return;
 
-				for (int i = 0; i < NUM_COLUMNS; i++) {
-					TableColumn tableColumn = new TableColumn(table, SWT.NONE);
-					tableColumn.setText(Character.toString((char) ('A' + i)));
-					tableColumn.setWidth(60);
-				}
-				WritableList list = new WritableList();
-				for (int i = 0; i < NUM_ROWS; i++) {
-					list.add(new Object());
-					for (int j = 0; j < NUM_COLUMNS; j++) {
-						cellFormulas[i][j] = new WritableValue();
-						cellValues[i][j] = new ComputedCellValue(
-								cellFormulas[i][j]);
-						if (!FUNKY_FORMULAS || i == 0 || j == 0) {
-							cellFormulas[i][j].setValue("");
-						} else {
-							cellFormulas[i][j].setValue("="
-									+ cellReference(i - 1, j) + "+"
-									+ cellReference(i, j - 1));
-						}
-					}
-				}
+            TableItem[] selection = table.getSelection();
+            TableItem row = (selection.length is 0) ? table
+                .getItem(table.getTopIndex()) : selection[0];
+            table.showItem(row);
+            cursor.setSelection(row, 0);
+            cursor.setVisible(true);
+            cursor.setFocus();
+        }
+    }
+    public static void main(String[] args) {
 
-				new TableUpdater(table, list) {
-					protected void updateItem(int rowIndex, TableItem item, Object element) {
-						if (DEBUG_LEVEL >= 1) {
-							System.out.println("updating row " + rowIndex);
-						}
-						for (int j = 0; j < NUM_COLUMNS; j++) {
-							item.setText(j, (String) cellValues[rowIndex][j]
-									.getValue());
-						}
-					}
-				};
+        final Display display = new Display();
+        Realm.runWithDefault(SWTObservables.getRealm(display), dgRunnable( (Display display_) {
+                Shell shell = new Shell(display_);
+                shell.setText("Data Binding Snippet 006");
 
-				if (FUNKY_COUNTER) {
-					// counter in A1
-					display.asyncExec(new Runnable() {
-						public void run() {
-							cellFormulas[0][1].setValue("" + counter++);
-							display.timerExec(COUNTER_UPDATE_DELAY, this);
-						}
-					});
-				}
+                final Table table = new Table(shell, SWT.BORDER | SWT.MULTI
+                        | SWT.FULL_SELECTION | SWT.VIRTUAL);
+                table.setLinesVisible(true);
+                table.setHeaderVisible(true);
 
-				// create a TableCursor to navigate around the table
-				final TableCursor cursor = new TableCursor(table, SWT.NONE);
-				// create an editor to edit the cell when the user hits "ENTER"
-				// while over a cell in the table
-				final ControlEditor editor = new ControlEditor(cursor);
-				editor.grabHorizontal = true;
-				editor.grabVertical = true;
+                for (int i = 0; i < NUM_COLUMNS; i++) {
+                    TableColumn tableColumn = new TableColumn(table, SWT.NONE);
+                    tableColumn.setText(Character.toString(cast(char) ('A' + i)));
+                    tableColumn.setWidth(60);
+                }
+                WritableList list = new WritableList();
+                for (int i = 0; i < NUM_ROWS; i++) {
+                    list.add(new Object());
+                    for (int j = 0; j < NUM_COLUMNS; j++) {
+                        cellFormulas[i][j] = new WritableValue();
+                        cellValues[i][j] = new ComputedCellValue(
+                                cellFormulas[i][j]);
+                        if (!FUNKY_FORMULAS || i is 0 || j is 0) {
+                            cellFormulas[i][j].setValue(stringcast(""));
+                        } else {
+                            cellFormulas[i][j].setValue(stringcast("="
+                                    ~ cellReference(i - 1, j) ~ "+"
+                                    ~ cellReference(i, j - 1)));
+                        }
+                    }
+                }
 
-				cursor.addSelectionListener(new SelectionAdapter() {
-					// when the TableEditor is over a cell, select the
-					// corresponding row
-					// in
-					// the table
-					public void widgetSelected(SelectionEvent e) {
-						table.setSelection(new TableItem[] { cursor.getRow() });
-					}
+                new LocalTableUpdater( table, list );
 
-					// when the user hits "ENTER" in the TableCursor, pop up a
-					// text
-					// editor so that
-					// they can change the text of the cell
-					public void widgetDefaultSelected(SelectionEvent e) {
-						final Text text = new Text(cursor, SWT.NONE);
-						TableItem row = cursor.getRow();
-						int rowIndex = table.indexOf(row);
-						int columnIndex = cursor.getColumn();
-						text
-								.setText((String) cellFormulas[rowIndex][columnIndex]
-										.getValue());
-						text.addKeyListener(new KeyAdapter() {
-							public void keyPressed(KeyEvent e) {
-								// close the text editor and copy the data over
-								// when the user hits "ENTER"
-								if (e.character == SWT.CR) {
-									TableItem row = cursor.getRow();
-									int rowIndex = table.indexOf(row);
-									int columnIndex = cursor.getColumn();
-									cellFormulas[rowIndex][columnIndex]
-											.setValue(text.getText());
-									text.dispose();
-								}
-								// close the text editor when the user hits
-								// "ESC"
-								if (e.character == SWT.ESC) {
-									text.dispose();
-								}
-							}
-						});
-						editor.setEditor(text);
-						text.setFocus();
-					}
-				});
-				// Hide the TableCursor when the user hits the "MOD1" or "MOD2"
-				// key.
-				// This alows the user to select multiple items in the table.
-				cursor.addKeyListener(new KeyAdapter() {
-					public void keyPressed(KeyEvent e) {
-						if (e.keyCode == SWT.MOD1 || e.keyCode == SWT.MOD2
-								|| (e.stateMask & SWT.MOD1) != 0
-								|| (e.stateMask & SWT.MOD2) != 0) {
-							cursor.setVisible(false);
-						}
-					}
-				});
-				// Show the TableCursor when the user releases the "MOD2" or
-				// "MOD1" key.
-				// This signals the end of the multiple selection task.
-				table.addKeyListener(new KeyAdapter() {
-					public void keyReleased(KeyEvent e) {
-						if (e.keyCode == SWT.MOD1
-								&& (e.stateMask & SWT.MOD2) != 0)
-							return;
-						if (e.keyCode == SWT.MOD2
-								&& (e.stateMask & SWT.MOD1) != 0)
-							return;
-						if (e.keyCode != SWT.MOD1
-								&& (e.stateMask & SWT.MOD1) != 0)
-							return;
-						if (e.keyCode != SWT.MOD2
-								&& (e.stateMask & SWT.MOD2) != 0)
-							return;
+                if (FUNKY_COUNTER) {
+                    // counter in A1
+                    display_.asyncExec(dgRunnable(&output, display_));
+                }
 
-						TableItem[] selection = table.getSelection();
-						TableItem row = (selection.length == 0) ? table
-								.getItem(table.getTopIndex()) : selection[0];
-						table.showItem(row);
-						cursor.setSelection(row, 0);
-						cursor.setVisible(true);
-						cursor.setFocus();
-					}
-				});
+                // create a TableCursor to navigate around the table
+                final TableCursor cursor = new TableCursor(table, SWT.NONE);
+                // create an editor to edit the cell when the user hits "ENTER"
+                // while over a cell in the table
+                final ControlEditor editor = new ControlEditor(cursor);
+                editor.grabHorizontal = true;
+                editor.grabVertical = true;
 
-				GridLayoutFactory.fillDefaults().generateLayout(shell);
-				shell.setSize(400, 300);
-				shell.open();
+                cursor.addSelectionListener(new CursorSelectionListener( cursor, table, editor ));
+                // Hide the TableCursor when the user hits the "MOD1" or "MOD2"
+                // key.
+                // This alows the user to select multiple items in the table.
+                cursor.addKeyListener(new CursorKeyListener(cursor) );
+                // Show the TableCursor when the user releases the "MOD2" or
+                // "MOD1" key.
+                // This signals the end of the multiple selection task.
+                table.addKeyListener(new TableKeyListener(table, cursor));
 
-				// The SWT event loop
-				while (!shell.isDisposed()) {
-					if (!display.readAndDispatch()) {
-						display.sleep();
-					}
-				}
-			}
-		});
-		display.dispose();
-	}
+                GridLayoutFactory.fillDefaults().generateLayout(shell);
+                shell.setSize(400, 300);
+                shell.open();
 
-	private static String cellReference(int rowIndex, int columnIndex) {
-		String cellReference = "" + ((char) ('A' + columnIndex))
-				+ (rowIndex + 1);
-		return cellReference;
-	}
+                // The SWT event loop
+                while (!shell.isDisposed()) {
+                    if (!display_.readAndDispatch()) {
+                        display_.sleep();
+                    }
+                }
+        }, display));
+        display.dispose();
+    }
+    private void output( Display display ){
+        cellFormulas[0][1].setValue(stringcast(Format("{}", counter++)));
+        display.timerExec(COUNTER_UPDATE_DELAY, dgRunnable( &output, display ));
+    }
 
+    private static String cellReference(int rowIndex, int columnIndex) {
+        String cellReference = Format("{}{}", (cast(char) ('A' + columnIndex))
+                , (rowIndex + 1));
+        return cellReference;
+    }
+
+}
+
+void main( String[] args ){
+    Snippet006Spreadsheet.main(args);
 }

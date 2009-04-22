@@ -9,7 +9,9 @@
  *     IBM Corporation - initial API and implementation
  ******************************************************************************/
 
-package org.eclipse.jface.examples.databinding.snippets;
+module org.eclipse.jface.examples.databinding.snippets.Snippet022ComputedListCombo;
+
+import java.lang.all;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -39,100 +41,103 @@ import org.eclipse.swt.widgets.Shell;
  * 
  */
 public class Snippet022ComputedListCombo {
-	private static WritableList model;
+    private static WritableList model;
 
-	public static void main(String[] args) {
-		Display display = new Display();
-		final Shell shell = new Shell(display);
-		shell.setLayout(new GridLayout(1, false));
+    public static void main(String[] args) {
+        Display display = new Display();
+        final Shell shell = new Shell(display);
+        shell.setLayout(new GridLayout(1, false));
 
-		Realm.runWithDefault(SWTObservables.getRealm(display), new Runnable() {
-			public void run() {
-				Snippet022ComputedListCombo snippet = new Snippet022ComputedListCombo();
-				snippet.createModel();
-				snippet.createControls(shell);
-			}
-		});
+        Realm.runWithDefault(SWTObservables.getRealm(display), new Runnable() {
+            public void run() {
+                Snippet022ComputedListCombo snippet = new Snippet022ComputedListCombo();
+                snippet.createModel();
+                snippet.createControls(shell);
+            }
+        });
 
-		shell.pack();
-		shell.open();
-		while (!shell.isDisposed()) {
-			if (!display.readAndDispatch())
-				display.sleep();
-		}
-		display.dispose();
-	}
+        shell.pack();
+        shell.open();
+        while (!shell.isDisposed()) {
+            if (!display.readAndDispatch())
+                display.sleep();
+        }
+        display.dispose();
+    }
 
-	/**
-	 * 
-	 */
-	protected void createModel() {
-		model = new WritableList();
-		model.add(new Thing("Alice", true, false));
-		model.add(new Thing("Beth", true, false));
-		model.add(new Thing("Cathy", true, false));
-		model.add(new Thing("Arthur", false, true));
-		model.add(new Thing("Bob", false, true));
-		model.add(new Thing("Curtis", false, true));
-		model.add(new Thing("Snail", true, true));
-		model.add(new Thing("Nail", false, false));
-	}
+    /**
+     * 
+     */
+    protected void createModel() {
+        model = new WritableList();
+        model.add(new Thing("Alice", true, false));
+        model.add(new Thing("Beth", true, false));
+        model.add(new Thing("Cathy", true, false));
+        model.add(new Thing("Arthur", false, true));
+        model.add(new Thing("Bob", false, true));
+        model.add(new Thing("Curtis", false, true));
+        model.add(new Thing("Snail", true, true));
+        model.add(new Thing("Nail", false, false));
+    }
 
-	/**
-	 * @param shell
-	 */
-	protected void createControls(Shell shell) {
-		Composite composite = new Composite(shell, SWT.NONE);
-		Group group = new Group(composite, SWT.NONE);
-		group.setText("Filter");
-		Button male = new Button(group, SWT.CHECK);
-		male.setText("Male");
-		Button female = new Button(group, SWT.CHECK);
-		female.setText("Female");
-		final IObservableValue femaleObservable = SWTObservables
-				.observeSelection(female);
-		final IObservableValue maleObservable = SWTObservables
-				.observeSelection(male);
-		Combo combo = new Combo(composite, SWT.DROP_DOWN | SWT.READ_ONLY);
-		GridDataFactory.defaultsFor(combo).align(SWT.BEGINNING, SWT.BEGINNING)
-				.applyTo(combo);
-		ComboViewer viewer = new ComboViewer(combo);
-		viewer.setContentProvider(new ObservableListContentProvider());
-		// We should really have an out-of-the box filtered list...
-		IObservableList filteredList = new ComputedList() {
-			protected List calculate() {
-				ArrayList result = new ArrayList();
-				for (Iterator it = model.iterator(); it.hasNext();) {
-					Thing thing = (Thing) it.next();
-					if (((Boolean) femaleObservable.getValue()).booleanValue()
-							&& !thing.female)
-						continue;
-					if (((Boolean) maleObservable.getValue()).booleanValue()
-							&& !thing.male)
-						continue;
-					result.add(thing);
-				}
-				return result;
-			}
-		};
-		viewer.setInput(filteredList);
-		GridLayoutFactory.swtDefaults().applyTo(group);
-		GridLayoutFactory.swtDefaults().applyTo(composite);
-	}
+    /**
+     * @param shell
+     */
+    protected void createControls(Shell shell) {
+        Composite composite = new Composite(shell, SWT.NONE);
+        Group group = new Group(composite, SWT.NONE);
+        group.setText("Filter");
+        Button male = new Button(group, SWT.CHECK);
+        male.setText("Male");
+        Button female = new Button(group, SWT.CHECK);
+        female.setText("Female");
+        final IObservableValue femaleObservable = SWTObservables
+                .observeSelection(female);
+        final IObservableValue maleObservable = SWTObservables
+                .observeSelection(male);
+        Combo combo = new Combo(composite, SWT.DROP_DOWN | SWT.READ_ONLY);
+        GridDataFactory.defaultsFor(combo).align(SWT.BEGINNING, SWT.BEGINNING)
+                .applyTo(combo);
+        ComboViewer viewer = new ComboViewer(combo);
+        viewer.setContentProvider(new ObservableListContentProvider());
+        // We should really have an out-of-the box filtered list...
+        IObservableList filteredList = new ComputedList() {
+            protected List calculate() {
+                ArrayList result = new ArrayList();
+                for (Iterator it = model.iterator(); it.hasNext();) {
+                    Thing thing = (Thing) it.next();
+                    if (((bool) femaleObservable.getValue()).booleanValue()
+                            && !thing.female)
+                        continue;
+                    if (((bool) maleObservable.getValue()).booleanValue()
+                            && !thing.male)
+                        continue;
+                    result.add(thing);
+                }
+                return result;
+            }
+        };
+        viewer.setInput(filteredList);
+        GridLayoutFactory.swtDefaults().applyTo(group);
+        GridLayoutFactory.swtDefaults().applyTo(composite);
+    }
 
-	static class Thing {
-		String name;
-		boolean male;
-		boolean female;
+    static class Thing {
+        String name;
+        bool male;
+        bool female;
 
-		public Thing(String name, boolean female, boolean male) {
-			this.name = name;
-			this.female = female;
-			this.male = male;
-		}
+        public Thing(String name, bool female, bool male) {
+            this.name = name;
+            this.female = female;
+            this.male = male;
+        }
 
-		public String toString() {
-			return name;
-		}
-	}
+        public String toString() {
+            return name;
+        }
+    }
+}
+void main( String[] args ){
+    Snippet022ComputedListCombo.main(args);
 }

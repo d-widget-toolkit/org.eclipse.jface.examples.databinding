@@ -9,7 +9,9 @@
  *     IBM Corporation - initial API and implementation
  ******************************************************************************/
 
-package org.eclipse.jface.examples.databinding.snippets;
+module org.eclipse.jface.examples.databinding.snippets.Snippet023ConditionalVisibility;
+
+import java.lang.all;
 
 import org.eclipse.core.databinding.observable.Realm;
 import org.eclipse.jface.databinding.swt.ISWTObservableValue;
@@ -32,84 +34,87 @@ import org.eclipse.swt.widgets.Text;
  * 
  */
 public class Snippet023ConditionalVisibility {
-	public static void main(String[] args) {
-		Display display = new Display();
-		final Shell shell = new Shell(display);
-		shell.setLayout(new GridLayout(1, false));
+    public static void main(String[] args) {
+        Display display = new Display();
+        final Shell shell = new Shell(display);
+        shell.setLayout(new GridLayout(1, false));
 
-		Realm.runWithDefault(SWTObservables.getRealm(display), new Runnable() {
-			public void run() {
-				new Snippet023ConditionalVisibility().createControls(shell);
-			}
-		});
+        Realm.runWithDefault(SWTObservables.getRealm(display), new Runnable() {
+            public void run() {
+                new Snippet023ConditionalVisibility().createControls(shell);
+            }
+        });
 
-		shell.pack();
-		shell.open();
-		while (!shell.isDisposed()) {
-			if (!display.readAndDispatch())
-				display.sleep();
-		}
-		display.dispose();
-	}
+        shell.pack();
+        shell.open();
+        while (!shell.isDisposed()) {
+            if (!display.readAndDispatch())
+                display.sleep();
+        }
+        display.dispose();
+    }
 
-	Text text;
-	Text toText;
-	Text fromText;
+    Text text;
+    Text toText;
+    Text fromText;
 
-	/**
-	 * @param shell
-	 */
-	private void createControls(Shell shell) {
-		Composite composite = new Composite(shell, SWT.NONE);
-		Group radioGroup = new Group(composite, SWT.NONE);
-		radioGroup.setText("Type");
-		Button textButton = new Button(radioGroup, SWT.RADIO);
-		textButton.setText("Text");
-		Button rangeButton = new Button(radioGroup, SWT.RADIO);
-		rangeButton.setText("Range");
-		GridLayoutFactory.swtDefaults().generateLayout(radioGroup);
+    /**
+     * @param shell
+     */
+    private void createControls(Shell shell) {
+        Composite composite = new Composite(shell, SWT.NONE);
+        Group radioGroup = new Group(composite, SWT.NONE);
+        radioGroup.setText("Type");
+        Button textButton = new Button(radioGroup, SWT.RADIO);
+        textButton.setText("Text");
+        Button rangeButton = new Button(radioGroup, SWT.RADIO);
+        rangeButton.setText("Range");
+        GridLayoutFactory.swtDefaults().generateLayout(radioGroup);
 
-		final Composite oneOfTwo = new Composite(composite, SWT.NONE);
-		final StackLayout stackLayout = new StackLayout();
-		oneOfTwo.setLayout(stackLayout);
+        final Composite oneOfTwo = new Composite(composite, SWT.NONE);
+        final StackLayout stackLayout = new StackLayout();
+        oneOfTwo.setLayout(stackLayout);
 
-		final Group rangeGroup = new Group(oneOfTwo, SWT.NONE);
-		rangeGroup.setText("Range");
-		Label fromLabel = new Label(rangeGroup, SWT.NONE);
-		fromLabel.setText("From:");
-		fromText = new Text(rangeGroup, SWT.SINGLE | SWT.LEAD | SWT.BORDER);
+        final Group rangeGroup = new Group(oneOfTwo, SWT.NONE);
+        rangeGroup.setText("Range");
+        Label fromLabel = new Label(rangeGroup, SWT.NONE);
+        fromLabel.setText("From:");
+        fromText = new Text(rangeGroup, SWT.SINGLE | SWT.LEAD | SWT.BORDER);
 
-		Label toLabel = new Label(rangeGroup, SWT.NONE);
-		toLabel.setText("To:");
-		toText = new Text(rangeGroup, SWT.SINGLE | SWT.LEAD | SWT.BORDER);
-		GridLayoutFactory.swtDefaults().numColumns(2)
-				.generateLayout(rangeGroup);
+        Label toLabel = new Label(rangeGroup, SWT.NONE);
+        toLabel.setText("To:");
+        toText = new Text(rangeGroup, SWT.SINGLE | SWT.LEAD | SWT.BORDER);
+        GridLayoutFactory.swtDefaults().numColumns(2)
+                .generateLayout(rangeGroup);
 
-		final Group textGroup = new Group(oneOfTwo, SWT.NONE);
-		textGroup.setText("Text");
-		Label label = new Label(textGroup, SWT.NONE);
-		label.setText("Text:");
-		text = new Text(textGroup, SWT.SINGLE | SWT.LEAD | SWT.BORDER);
-		GridLayoutFactory.swtDefaults().numColumns(2).generateLayout(textGroup);
+        final Group textGroup = new Group(oneOfTwo, SWT.NONE);
+        textGroup.setText("Text");
+        Label label = new Label(textGroup, SWT.NONE);
+        label.setText("Text:");
+        text = new Text(textGroup, SWT.SINGLE | SWT.LEAD | SWT.BORDER);
+        GridLayoutFactory.swtDefaults().numColumns(2).generateLayout(textGroup);
 
-		GridLayoutFactory.swtDefaults().numColumns(2).generateLayout(composite);
+        GridLayoutFactory.swtDefaults().numColumns(2).generateLayout(composite);
 
-		final ISWTObservableValue rangeSelected = SWTObservables
-				.observeSelection(rangeButton);
-		final ISWTObservableValue textSelected = SWTObservables
-				.observeSelection(textButton);
+        final ISWTObservableValue rangeSelected = SWTObservables
+                .observeSelection(rangeButton);
+        final ISWTObservableValue textSelected = SWTObservables
+                .observeSelection(textButton);
 
-		// Note that ControlUpdater is not API.
-		new ControlUpdater(oneOfTwo) {
-			protected void updateControl() {
-				if (((Boolean) rangeSelected.getValue()).booleanValue()) {
-					stackLayout.topControl = rangeGroup;
-					oneOfTwo.layout();
-				} else if (((Boolean) textSelected.getValue()).booleanValue()) {
-					stackLayout.topControl = textGroup;
-					oneOfTwo.layout();
-				}
-			}
-		};
-	}
+        // Note that ControlUpdater is not API.
+        new ControlUpdater(oneOfTwo) {
+            protected void updateControl() {
+                if (((bool) rangeSelected.getValue()).booleanValue()) {
+                    stackLayout.topControl = rangeGroup;
+                    oneOfTwo.layout();
+                } else if (((bool) textSelected.getValue()).booleanValue()) {
+                    stackLayout.topControl = textGroup;
+                    oneOfTwo.layout();
+                }
+            }
+        };
+    }
+}
+void main( String[] args ){
+    Snippet023ConditionalVisibility.main(args);
 }

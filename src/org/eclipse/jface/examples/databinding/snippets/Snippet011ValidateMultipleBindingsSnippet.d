@@ -9,7 +9,9 @@
  *     Brad Reynolds - initial API and implementation
  ******************************************************************************/
 
-package org.eclipse.jface.examples.databinding.snippets;
+module org.eclipse.jface.examples.databinding.snippets.Snippet011ValidateMultipleBindingsSnippet;
+
+import java.lang.all;
 
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
@@ -37,93 +39,96 @@ import org.eclipse.swt.widgets.Text;
  * @author Brad Reynolds
  */
 public class Snippet011ValidateMultipleBindingsSnippet {
-	public static void main(String[] args) {
-		Realm.runWithDefault(SWTObservables.getRealm(Display.getDefault()),
-				new Runnable() {
-					public void run() {
-						Snippet011ValidateMultipleBindingsSnippet.run();
-					}
-				});
-	}
+    public static void main(String[] args) {
+        Realm.runWithDefault(SWTObservables.getRealm(Display.getDefault()),
+                new Runnable() {
+                    public void run() {
+                        Snippet011ValidateMultipleBindingsSnippet.run();
+                    }
+                });
+    }
 
-	private static void run() {
-		Shell shell = new Shell();
+    private static void run() {
+        Shell shell = new Shell();
 
-		View view = new View(shell);
-		final Model model = new Model();
+        View view = new View(shell);
+        final Model model = new Model();
 
-		DataBindingContext dbc = new DataBindingContext();
-		dbc.bindValue(SWTObservables.observeText(view.text1, SWT.Modify),
-				model.value1, new UpdateValueStrategy()
-						.setAfterConvertValidator(new CrossFieldValidator(
-								model.value2)), null);
-		dbc.bindValue(SWTObservables.observeText(view.text2, SWT.Modify),
-				model.value2, new UpdateValueStrategy()
-						.setAfterConvertValidator(new CrossFieldValidator(
-								model.value1)), null);
+        DataBindingContext dbc = new DataBindingContext();
+        dbc.bindValue(SWTObservables.observeText(view.text1, SWT.Modify),
+                model.value1, new UpdateValueStrategy()
+                        .setAfterConvertValidator(new CrossFieldValidator(
+                                model.value2)), null);
+        dbc.bindValue(SWTObservables.observeText(view.text2, SWT.Modify),
+                model.value2, new UpdateValueStrategy()
+                        .setAfterConvertValidator(new CrossFieldValidator(
+                                model.value1)), null);
 
-		// DEBUG - print to show value change
-		model.value1.addValueChangeListener(new IValueChangeListener() {
-			public void handleValueChange(ValueChangeEvent event) {
-				System.out.println("Value 1: " + model.value1.getValue());
-			}
-		});
+        // DEBUG - print to show value change
+        model.value1.addValueChangeListener(new IValueChangeListener() {
+            public void handleValueChange(ValueChangeEvent event) {
+                System.out.println("Value 1: " + model.value1.getValue());
+            }
+        });
 
-		// DEBUG - print to show value change
-		model.value2.addValueChangeListener(new IValueChangeListener() {
-			public void handleValueChange(ValueChangeEvent event) {
-				System.out.println("Value 2: " + model.value2.getValue());
-			}
-		});
+        // DEBUG - print to show value change
+        model.value2.addValueChangeListener(new IValueChangeListener() {
+            public void handleValueChange(ValueChangeEvent event) {
+                System.out.println("Value 2: " + model.value2.getValue());
+            }
+        });
 
-		shell.pack();
-		shell.open();
-		Display display = shell.getDisplay();
-		while (!shell.isDisposed()) {
-			if (!display.readAndDispatch())
-				display.sleep();
-		}
-		display.dispose();
-	}
+        shell.pack();
+        shell.open();
+        Display display = shell.getDisplay();
+        while (!shell.isDisposed()) {
+            if (!display.readAndDispatch())
+                display.sleep();
+        }
+        display.dispose();
+    }
 
-	/**
-	 * @since 3.2
-	 * 
-	 */
-	private static final class CrossFieldValidator implements IValidator {
-		/**
-		 * 
-		 */
-		private final IObservableValue other;
+    /**
+     * @since 3.2
+     * 
+     */
+    private static final class CrossFieldValidator implements IValidator {
+        /**
+         * 
+         */
+        private final IObservableValue other;
 
-		/**
-		 * @param model
-		 */
-		private CrossFieldValidator(IObservableValue other) {
-			this.other = other;
-		}
+        /**
+         * @param model
+         */
+        private CrossFieldValidator(IObservableValue other) {
+            this.other = other;
+        }
 
-		public IStatus validate(Object value) {
-			if (!value.equals(other.getValue())) {
-				return ValidationStatus.ok();
-			}
-			return ValidationStatus.error("values cannot be the same");
-		}
-	}
+        public IStatus validate(Object value) {
+            if (!value.equals(other.getValue())) {
+                return ValidationStatus.ok();
+            }
+            return ValidationStatus.error("values cannot be the same");
+        }
+    }
 
-	static class Model {
-		WritableValue value1 = new WritableValue();
-		WritableValue value2 = new WritableValue();
-	}
+    static class Model {
+        WritableValue value1 = new WritableValue();
+        WritableValue value2 = new WritableValue();
+    }
 
-	static class View {
-		Text text1;
-		Text text2;
+    static class View {
+        Text text1;
+        Text text2;
 
-		View(Composite composite) {
-			composite.setLayout(new GridLayout(2, true));
-			text1 = new Text(composite, SWT.BORDER);
-			text2 = new Text(composite, SWT.BORDER);
-		}
-	}
+        View(Composite composite) {
+            composite.setLayout(new GridLayout(2, true));
+            text1 = new Text(composite, SWT.BORDER);
+            text2 = new Text(composite, SWT.BORDER);
+        }
+    }
+}
+void main( String[] args ){
+    Snippet011ValidateMultipleBindingsSnippet.main(args);
 }

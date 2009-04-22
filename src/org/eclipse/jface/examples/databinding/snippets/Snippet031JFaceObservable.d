@@ -9,7 +9,9 @@
  *     IBM Corporation - initial API and implementation
  ******************************************************************************/
 
-package org.eclipse.jface.examples.databinding.snippets;
+module org.eclipse.jface.examples.databinding.snippets.Snippet031JFaceObservable;
+
+import java.lang.all;
 
 import org.eclipse.core.commands.common.EventManager;
 import org.eclipse.core.databinding.DataBindingContext;
@@ -28,115 +30,118 @@ import org.eclipse.swt.widgets.Text;
 
 public class Snippet031JFaceObservable {
 
-	public static final String NAME_PROPERTY = "name_property";
+    public static final String NAME_PROPERTY = "name_property";
 
-	public static void main(String[] args) {
-		Display display = new Display();
-		final ViewModel viewModel = new ViewModel();
+    public static void main(String[] args) {
+        Display display = new Display();
+        final ViewModel viewModel = new ViewModel();
 
-		Realm.runWithDefault(SWTObservables.getRealm(display), new Runnable() {
-			public void run() {
-				final Shell shell = new View(viewModel).createShell();
-				// The SWT event loop
-				Display display = Display.getCurrent();
-				while (!shell.isDisposed()) {
-					if (!display.readAndDispatch()) {
-						display.sleep();
-					}
-				}
-			}
-		});
-		// Print the results
-		System.out.println("person.getName() = "
-				+ viewModel.getPerson().getName());
-	}
+        Realm.runWithDefault(SWTObservables.getRealm(display), new Runnable() {
+            public void run() {
+                final Shell shell = new View(viewModel).createShell();
+                // The SWT event loop
+                Display display = Display.getCurrent();
+                while (!shell.isDisposed()) {
+                    if (!display.readAndDispatch()) {
+                        display.sleep();
+                    }
+                }
+            }
+        });
+        // Print the results
+        System.out.println("person.getName() = "
+                + viewModel.getPerson().getName());
+    }
 
-	// The data model class. This is normally a persistent class of some sort.
-	// 
-	// In this example, we extend the EventManager class
-	// to manage our listeners and we fire a property change
-	// event when the object state changes.
-	public static class Person extends EventManager {
-		// A property...
-		String name = "HelloWorld";
+    // The data model class. This is normally a persistent class of some sort.
+    // 
+    // In this example, we extend the EventManager class
+    // to manage our listeners and we fire a property change
+    // event when the object state changes.
+    public static class Person extends EventManager {
+        // A property...
+        String name = "HelloWorld";
 
-		public String getName() {
-			return name;
-		}
+        public String getName() {
+            return name;
+        }
 
-		public void setName(String name) {
-			fireChange(new PropertyChangeEvent(this, NAME_PROPERTY, this.name,
-					this.name = name));
-		}
+        public void setName(String name) {
+            fireChange(new PropertyChangeEvent(this, NAME_PROPERTY, this.name,
+                    this.name = name));
+        }
 
-		public void addPropertyChangeListener(IPropertyChangeListener listener) {
-			addListenerObject(listener);
-		}
+        public void addPropertyChangeListener(IPropertyChangeListener listener) {
+            addListenerObject(listener);
+        }
 
-		public void removePropertyChangeListener(
-				IPropertyChangeListener listener) {
-			removeListenerObject(listener);
-		}
+        public void removePropertyChangeListener(
+                IPropertyChangeListener listener) {
+            removeListenerObject(listener);
+        }
 
-		private void fireChange(PropertyChangeEvent event) {
-			final Object[] list = getListeners();
-			for (int i = 0; i < list.length; ++i) {
-				((IPropertyChangeListener) list[i]).propertyChange(event);
-			}
-		}
+        private void fireChange(PropertyChangeEvent event) {
+            final Object[] list = getListeners();
+            for (int i = 0; i < list.length; ++i) {
+                ((IPropertyChangeListener) list[i]).propertyChange(event);
+            }
+        }
 
-	}
+    }
 
-	// The View's model--the root of our Model graph for this particular GUI.
-	//
-	// Typically each View class has a corresponding ViewModel class.
-	// The ViewModel is responsible for getting the objects to edit from the
-	// DAO. Since this snippet doesn't have any persistent objects to
-	// retrieve, this ViewModel just instantiates a model object to edit.
-	static class ViewModel {
-		// The model to bind
-		private Person person = new Person();
+    // The View's model--the root of our Model graph for this particular GUI.
+    //
+    // Typically each View class has a corresponding ViewModel class.
+    // The ViewModel is responsible for getting the objects to edit from the
+    // DAO. Since this snippet doesn't have any persistent objects to
+    // retrieve, this ViewModel just instantiates a model object to edit.
+    static class ViewModel {
+        // The model to bind
+        private Person person = new Person();
 
-		public Person getPerson() {
-			return person;
-		}
-	}
+        public Person getPerson() {
+            return person;
+        }
+    }
 
-	// The GUI view
-	static class View {
-		private ViewModel viewModel;
-		private Text name;
+    // The GUI view
+    static class View {
+        private ViewModel viewModel;
+        private Text name;
 
-		public View(ViewModel viewModel) {
-			this.viewModel = viewModel;
-		}
+        public View(ViewModel viewModel) {
+            this.viewModel = viewModel;
+        }
 
-		public Shell createShell() {
-			// Build a UI
-			Display display = Display.getDefault();
-			Shell shell = new Shell(display);
-			shell.setLayout(new RowLayout(SWT.VERTICAL));
-			name = new Text(shell, SWT.BORDER);
+        public Shell createShell() {
+            // Build a UI
+            Display display = Display.getDefault();
+            Shell shell = new Shell(display);
+            shell.setLayout(new RowLayout(SWT.VERTICAL));
+            name = new Text(shell, SWT.BORDER);
 
-			// Bind it
-			DataBindingContext bindingContext = new DataBindingContext();
-			Person person = viewModel.getPerson();
+            // Bind it
+            DataBindingContext bindingContext = new DataBindingContext();
+            Person person = viewModel.getPerson();
 
-			IValueProperty nameProperty = JFaceProperties.value(Person.class,
-					"name", NAME_PROPERTY);
+            IValueProperty nameProperty = JFaceProperties.value(Person.class,
+                    "name", NAME_PROPERTY);
 
-			bindingContext.bindValue(SWTObservables.observeText(name,
-					SWT.Modify), nameProperty.observe(person), null, null);
+            bindingContext.bindValue(SWTObservables.observeText(name,
+                    SWT.Modify), nameProperty.observe(person), null, null);
 
-			Label label = new Label(shell, SWT.NONE);
-			bindingContext.bindValue(SWTObservables.observeText(label),
-					nameProperty.observe(person), null, null);
+            Label label = new Label(shell, SWT.NONE);
+            bindingContext.bindValue(SWTObservables.observeText(label),
+                    nameProperty.observe(person), null, null);
 
-			// Open and return the Shell
-			shell.pack();
-			shell.open();
-			return shell;
-		}
-	}
+            // Open and return the Shell
+            shell.pack();
+            shell.open();
+            return shell;
+        }
+    }
 
+}
+void main( String[] args ){
+    Snippet031JFaceObservable.main(args);
 }

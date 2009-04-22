@@ -11,7 +11,9 @@
  *     Matthew Hall - bug 260329
  ******************************************************************************/
 
-package org.eclipse.jface.examples.databinding.snippets;
+module org.eclipse.jface.examples.databinding.snippets.Snippet002UpdateComboRetainSelection;
+
+import java.lang.all;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -37,6 +39,8 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
+import tango.io.Stdout;
+
 /**
  * Shows how to bind a Combo so that when update its items, the selection is
  * retained if at all possible.
@@ -45,29 +49,30 @@ import org.eclipse.swt.widgets.Shell;
  */
 public class Snippet002UpdateComboRetainSelection {
     public static void main(String[] args) {
-    	final Display display = new Display();
-    	Realm.runWithDefault(SWTObservables.getRealm(display), new Runnable() {
-    		public void run() {
-    			ViewModel viewModel = new ViewModel();
-    			Shell shell = new View(viewModel).createShell();
-    			
-    			// The SWT event loop
-    			while (!shell.isDisposed()) {
-    				if (!display.readAndDispatch()) {
-    					display.sleep();
-    				}
-    			}
-    			
-    			// Print the results
-    			System.out.println(viewModel.getText());
-    		}
-    	});
-    	display.dispose();
+        final Display display = new Display();
+        Realm.runWithDefault(SWTObservables.getRealm(display), dgRunnable((Display display_) {
+            ViewModel viewModel = new ViewModel();
+            Shell shell = (new View(viewModel)).createShell();
+            
+            // The SWT event loop
+            while (!shell.isDisposed()) {
+                if (!display_.readAndDispatch()) {
+                    display_.sleep();
+                }
+            }
+            
+            // Print the results
+            Stdout.formatln( "{}", viewModel.getText());
+        }, display));
+        display.dispose();
     }
 
     // Minimal JavaBeans support
     public static abstract class AbstractModelObject {
-        private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+        private PropertyChangeSupport propertyChangeSupport;
+        this(){
+            propertyChangeSupport = new PropertyChangeSupport(this);
+        }
 
         public void addPropertyChangeListener(PropertyChangeListener listener) {
             propertyChangeSupport.addPropertyChangeListener(listener);
@@ -91,11 +96,12 @@ public class Snippet002UpdateComboRetainSelection {
     }
 
     // The View's model--the root of our Model graph for this particular GUI.
-    public static class ViewModel extends AbstractModelObject {
+    public static class ViewModel : AbstractModelObject {
         private String text = "beef";
 
-        private List choices = new ArrayList();
-        {
+        private List choices;
+        this(){
+            choices = new ArrayList();
             choices.add("pork");
             choices.add("beef");
             choices.add("poultry");
@@ -109,7 +115,7 @@ public class Snippet002UpdateComboRetainSelection {
         public void setChoices(List choices) {
             List old = this.choices;
             this.choices = choices;
-            firePropertyChange("choices", old, choices);
+            firePropertyChange("choices", cast(Object)old, cast(Object)choices);
         }
 
         public String getText() {
@@ -119,7 +125,7 @@ public class Snippet002UpdateComboRetainSelection {
         public void setText(String text) {
             String oldValue = this.text;
             this.text = text;
-            firePropertyChange("text", oldValue, text);
+            firePropertyChange("text", stringcast(oldValue), stringcast(text));
         }
     }
 
@@ -131,8 +137,20 @@ public class Snippet002UpdateComboRetainSelection {
          */
         static int count;
 
-        public View(ViewModel viewModel) {
+        public this(ViewModel viewModel) {
             this.viewModel = viewModel;
+        }
+        class ResetSelectionListener : SelectionAdapter {
+            public void widgetSelected(SelectionEvent e) {
+                List newList = new ArrayList();
+                newList.add("Chocolate");
+                newList.add("Vanilla");
+                newList.add("Mango Parfait");
+                newList.add("beef");
+                newList.add("Cheesecake");
+                newList.add(Integer.toString(++count));
+                viewModel.setChoices(newList);
+            }
         }
 
         public Shell createShell() {
@@ -143,29 +161,18 @@ public class Snippet002UpdateComboRetainSelection {
             Combo combo = new Combo(shell, SWT.BORDER | SWT.READ_ONLY);
             Button reset = new Button(shell, SWT.NULL);
             reset.setText("reset collection");
-            reset.addSelectionListener(new SelectionAdapter() {
-                public void widgetSelected(SelectionEvent e) {
-                    List newList = new ArrayList();
-                    newList.add("Chocolate");
-                    newList.add("Vanilla");
-                    newList.add("Mango Parfait");
-                    newList.add("beef");
-                    newList.add("Cheesecake");
-                    newList.add(Integer.toString(++count));
-                    viewModel.setChoices(newList);
-                }
-            });
+            reset.addSelectionListener(new ResetSelectionListener());
 
             // Print value out first
-            System.out.println(viewModel.getText());
+            Stdout.formatln("{}", viewModel.getText());
 
             DataBindingContext dbc = new DataBindingContext();
             
             IObservableList list = MasterDetailObservables.detailList(BeansObservables.observeValue(viewModel, "choices"),
                     getListDetailFactory(),
-                    String.class);
-            dbc.bindList(SWTObservables.observeItems(combo), list); 
-            dbc.bindValue(SWTObservables.observeText(combo), BeansObservables.observeValue(viewModel, "text"));
+                    Class.fromType!(String));
+            dbc.bindList(SWTObservables.observeItems(combo), list, null, null ); 
+            dbc.bindValue(SWTObservables.observeText(combo), BeansObservables.observeValue(viewModel, "text"), null, null );
             
             // Open and return the Shell
             shell.pack();
@@ -175,12 +182,17 @@ public class Snippet002UpdateComboRetainSelection {
     }
 
     private static IObservableFactory getListDetailFactory() {
-        return new IObservableFactory() {
+        return new class() IObservableFactory {
             public IObservable createObservable(Object target) {
-                WritableList list = WritableList.withElementType(String.class);
-                list.addAll((Collection) target);
+                WritableList list = WritableList.withElementType(Class.fromType!(String));
+                list.addAll(cast(Collection) target);
                 return list;
             }
         };
     }
 }
+
+void main( String[] args ){
+    Snippet002UpdateComboRetainSelection.main(args);
+}
+

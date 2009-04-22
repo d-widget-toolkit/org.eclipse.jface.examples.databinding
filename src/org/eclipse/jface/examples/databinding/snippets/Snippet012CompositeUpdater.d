@@ -9,7 +9,9 @@
  *     IBM Corporation - initial API and implementation
  ******************************************************************************/
 
-package org.eclipse.jface.examples.databinding.snippets;
+module org.eclipse.jface.examples.databinding.snippets.Snippet012CompositeUpdater;
+
+import java.lang.all;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -36,77 +38,80 @@ import org.eclipse.swt.widgets.Widget;
  */
 public class Snippet012CompositeUpdater {
 
-	public static void main(String[] args) {
-		final Display display = new Display();
-		Realm.runWithDefault(SWTObservables.getRealm(display), new Runnable() {
-			public void run() {
-				Shell shell = new Shell(display);
+    public static void main(String[] args) {
+        final Display display = new Display();
+        Realm.runWithDefault(SWTObservables.getRealm(display), new Runnable() {
+            public void run() {
+                Shell shell = new Shell(display);
 
-				final WritableList list = new WritableList();
+                final WritableList list = new WritableList();
 
-				Button button = new Button(shell, SWT.PUSH);
-				button.setText("add");
-				button.addSelectionListener(new SelectionAdapter() {
-					public void widgetSelected(
-							org.eclipse.swt.events.SelectionEvent e) {
-						list.add(0, new Counter());
-					}
-				});
+                Button button = new Button(shell, SWT.PUSH);
+                button.setText("add");
+                button.addSelectionListener(new SelectionAdapter() {
+                    public void widgetSelected(
+                            org.eclipse.swt.events.SelectionEvent e) {
+                        list.add(0, new Counter());
+                    }
+                });
 
-				final Composite composite = new Composite(shell, SWT.None);
+                final Composite composite = new Composite(shell, SWT.None);
 
-				new CompositeUpdater(composite, list) {
-					protected Widget createWidget(int index) {
-						Label label = new Label(composite, SWT.BORDER);
-						//requestLayout(label);
-						return label;
-					}
+                new CompositeUpdater(composite, list) {
+                    protected Widget createWidget(int index) {
+                        Label label = new Label(composite, SWT.BORDER);
+                        //requestLayout(label);
+                        return label;
+                    }
 
-					protected void updateWidget(Widget widget, Object element) {
-						((Label) widget).setText(((Counter) element).getValue()
-								+ "");
-						requestLayout((Label)widget);
-					}
-				};
-				GridLayoutFactory.fillDefaults().numColumns(10).generateLayout(composite);
+                    protected void updateWidget(Widget widget, Object element) {
+                        ((Label) widget).setText(((Counter) element).getValue()
+                                + "");
+                        requestLayout((Label)widget);
+                    }
+                };
+                GridLayoutFactory.fillDefaults().numColumns(10).generateLayout(composite);
 
-				GridDataFactory.fillDefaults().grab(true, true).applyTo(
-						composite);
+                GridDataFactory.fillDefaults().grab(true, true).applyTo(
+                        composite);
 
-				GridLayoutFactory.fillDefaults().generateLayout(shell);
-				shell.pack();
-				shell.open();
-				while (!shell.isDisposed()) {
-					if (!display.readAndDispatch())
-						display.sleep();
-				}
-			}
-		});
-		display.dispose();
-	}
+                GridLayoutFactory.fillDefaults().generateLayout(shell);
+                shell.pack();
+                shell.open();
+                while (!shell.isDisposed()) {
+                    if (!display.readAndDispatch())
+                        display.sleep();
+                }
+            }
+        });
+        display.dispose();
+    }
 
-	static Timer timer = new Timer(true);
+    static Timer timer = new Timer(true);
 
-	static class Counter extends WritableValue {
-		Counter() {
-			super(new Integer(0), Integer.class);
-			scheduleIncrementTask();
-		}
+    static class Counter extends WritableValue {
+        Counter() {
+            super(new Integer(0), Integer.class);
+            scheduleIncrementTask();
+        }
 
-		private void scheduleIncrementTask() {
-			timer.schedule(new TimerTask() {
-				public void run() {
-					// we have to get onto the realm (UI thread) to perform the
-					// increment
-					getRealm().asyncExec(new Runnable() {
-						public void run() {
-							Integer currentVal = (Integer) getValue();
-							setValue(new Integer(currentVal.intValue() + 1));
-						}
-					});
-					scheduleIncrementTask();
-				}
-			}, 1000);
-		}
-	}
+        private void scheduleIncrementTask() {
+            timer.schedule(new TimerTask() {
+                public void run() {
+                    // we have to get onto the realm (UI thread) to perform the
+                    // increment
+                    getRealm().asyncExec(new Runnable() {
+                        public void run() {
+                            Integer currentVal = (Integer) getValue();
+                            setValue(new Integer(currentVal.intValue() + 1));
+                        }
+                    });
+                    scheduleIncrementTask();
+                }
+            }, 1000);
+        }
+    }
+}
+void main( String[] args ){
+    Snippet012CompositeUpdater.main(args);
 }

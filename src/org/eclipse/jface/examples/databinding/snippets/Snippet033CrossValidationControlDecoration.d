@@ -9,7 +9,9 @@
  *     Matthew Hall - initial API and implementation (bug 268472)
  ******************************************************************************/
 
-package org.eclipse.jface.examples.databinding.snippets;
+module org.eclipse.jface.examples.databinding.snippets.Snippet033CrossValidationControlDecoration;
+
+import java.lang.all;
 
 import java.util.Date;
 
@@ -38,114 +40,117 @@ import org.eclipse.swt.widgets.Shell;
  * 
  */
 public class Snippet033CrossValidationControlDecoration {
-	protected Shell shell;
-	private DateTime startDate;
-	private DateTime endDate;
+    protected Shell shell;
+    private DateTime startDate;
+    private DateTime endDate;
 
-	/**
-	 * Launch the application
-	 * 
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		try {
-			Snippet033CrossValidationControlDecoration window = new Snippet033CrossValidationControlDecoration();
-			window.open();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    /**
+     * Launch the application
+     * 
+     * @param args
+     */
+    public static void main(String[] args) {
+        try {
+            Snippet033CrossValidationControlDecoration window = new Snippet033CrossValidationControlDecoration();
+            window.open();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-	/**
-	 * Open the window
-	 */
-	public void open() {
-		final Display display = Display.getDefault();
-		Realm.runWithDefault(SWTObservables.getRealm(display), new Runnable() {
-			public void run() {
-				createContents();
-				shell.pack();
-				shell.open();
-				while (!shell.isDisposed()) {
-					if (!display.readAndDispatch())
-						display.sleep();
-				}
-			}
-		});
-	}
+    /**
+     * Open the window
+     */
+    public void open() {
+        final Display display = Display.getDefault();
+        Realm.runWithDefault(SWTObservables.getRealm(display), new Runnable() {
+            public void run() {
+                createContents();
+                shell.pack();
+                shell.open();
+                while (!shell.isDisposed()) {
+                    if (!display.readAndDispatch())
+                        display.sleep();
+                }
+            }
+        });
+    }
 
-	protected void createContents() {
-		shell = new Shell();
-		GridLayout layout = new GridLayout();
-		layout.numColumns = 4;
-		shell.setLayout(layout);
-		shell.setText("Snippet033CrossValidationControlDecoration.java");
+    protected void createContents() {
+        shell = new Shell();
+        GridLayout layout = new GridLayout();
+        layout.numColumns = 4;
+        shell.setLayout(layout);
+        shell.setText("Snippet033CrossValidationControlDecoration.java");
 
-		final Label label = new Label(shell, SWT.NONE);
-		label.setLayoutData(new GridData());
-		label.setText("Start date");
-		startDate = new DateTime(shell, SWT.CALENDAR);
-		final GridData gd_startDate = new GridData();
-		gd_startDate.horizontalIndent = 10;
-		startDate.setLayoutData(gd_startDate);
+        final Label label = new Label(shell, SWT.NONE);
+        label.setLayoutData(new GridData());
+        label.setText("Start date");
+        startDate = new DateTime(shell, SWT.CALENDAR);
+        final GridData gd_startDate = new GridData();
+        gd_startDate.horizontalIndent = 10;
+        startDate.setLayoutData(gd_startDate);
 
-		final Label startDateLabel = new Label(shell, SWT.NONE);
-		startDateLabel.setLayoutData(new GridData());
-		startDateLabel.setText("End date");
-		endDate = new DateTime(shell, SWT.CALENDAR);
-		final GridData gd_endDate = new GridData();
-		gd_endDate.horizontalIndent = 10;
-		endDate.setLayoutData(gd_endDate);
+        final Label startDateLabel = new Label(shell, SWT.NONE);
+        startDateLabel.setLayoutData(new GridData());
+        startDateLabel.setText("End date");
+        endDate = new DateTime(shell, SWT.CALENDAR);
+        final GridData gd_endDate = new GridData();
+        gd_endDate.horizontalIndent = 10;
+        endDate.setLayoutData(gd_endDate);
 
-		bindUI();
-	}
+        bindUI();
+    }
 
-	private void bindUI() {
-		IObservableValue startDateObservable = WidgetProperties.selection()
-				.observe(startDate);
-		IObservableValue endDateObservable = WidgetProperties.selection()
-				.observe(endDate);
+    private void bindUI() {
+        IObservableValue startDateObservable = WidgetProperties.selection()
+                .observe(startDate);
+        IObservableValue endDateObservable = WidgetProperties.selection()
+                .observe(endDate);
 
-		ControlDecorationSupport.create(new DateRangeValidator(
-				startDateObservable, endDateObservable,
-				"Start date must be on or before end date"), SWT.LEFT
-				| SWT.CENTER);
+        ControlDecorationSupport.create(new DateRangeValidator(
+                startDateObservable, endDateObservable,
+                "Start date must be on or before end date"), SWT.LEFT
+                | SWT.CENTER);
 
-		// Customize the decoration's description text and image
-		ControlDecorationUpdater decorationUpdater = new ControlDecorationUpdater() {
-			protected String getDescriptionText(IStatus status) {
-				return "ERROR: " + super.getDescriptionText(status);
-			}
+        // Customize the decoration's description text and image
+        ControlDecorationUpdater decorationUpdater = new ControlDecorationUpdater() {
+            protected String getDescriptionText(IStatus status) {
+                return "ERROR: " + super.getDescriptionText(status);
+            }
 
-			protected Image getImage(IStatus status) {
-				return status.isOK() ? null : Display.getCurrent()
-						.getSystemImage(SWT.ICON_ERROR);
-			}
-		};
-		ControlDecorationSupport.create(new DateRangeValidator(Observables
-				.constantObservableValue(new Date()), startDateObservable,
-				"Choose a starting date later than today"), SWT.LEFT | SWT.TOP,
-				(Composite) null, decorationUpdater);
-	}
+            protected Image getImage(IStatus status) {
+                return status.isOK() ? null : Display.getCurrent()
+                        .getSystemImage(SWT.ICON_ERROR);
+            }
+        };
+        ControlDecorationSupport.create(new DateRangeValidator(Observables
+                .constantObservableValue(new Date()), startDateObservable,
+                "Choose a starting date later than today"), SWT.LEFT | SWT.TOP,
+                (Composite) null, decorationUpdater);
+    }
 
-	private static class DateRangeValidator extends MultiValidator {
-		private final IObservableValue start;
-		private final IObservableValue end;
-		private final String errorMessage;
+    private static class DateRangeValidator extends MultiValidator {
+        private final IObservableValue start;
+        private final IObservableValue end;
+        private final String errorMessage;
 
-		public DateRangeValidator(IObservableValue start, IObservableValue end,
-				String errorMessage) {
-			this.start = start;
-			this.end = end;
-			this.errorMessage = errorMessage;
-		}
+        public DateRangeValidator(IObservableValue start, IObservableValue end,
+                String errorMessage) {
+            this.start = start;
+            this.end = end;
+            this.errorMessage = errorMessage;
+        }
 
-		protected IStatus validate() {
-			Date startDate = (Date) start.getValue();
-			Date endDate = (Date) end.getValue();
-			if (startDate.compareTo(endDate) > 0)
-				return ValidationStatus.error(errorMessage);
-			return ValidationStatus.ok();
-		}
-	}
+        protected IStatus validate() {
+            Date startDate = (Date) start.getValue();
+            Date endDate = (Date) end.getValue();
+            if (startDate.compareTo(endDate) > 0)
+                return ValidationStatus.error(errorMessage);
+            return ValidationStatus.ok();
+        }
+    }
+}
+void main( String[] args ){
+    Snippet033CrossValidationControlDecoration.main(args);
 }

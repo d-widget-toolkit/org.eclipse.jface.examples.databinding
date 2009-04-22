@@ -9,7 +9,9 @@
  *     IBM Corporation - initial API and implementation
  *     Brad Reynolds - bug 116920
  *******************************************************************************/
-package org.eclipse.jface.examples.databinding.snippets;
+module org.eclipse.jface.examples.databinding.snippets.Snippet005MenuUpdater;
+
+import java.lang.all;
 
 import java.util.Date;
 import java.util.Iterator;
@@ -24,62 +26,69 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 
+import tango.io.Stdout;
+
 /**
  */
 public class Snippet005MenuUpdater {
-	public static void main(String[] args) {
-		final Display display = new Display();
-		Realm.runWithDefault(SWTObservables.getRealm(display), new Runnable() {
-			public void run() {
-				Shell shell = new Shell(display);
+    public static void main(String[] args) {
+        void add(Display d, WritableList menuItemStrings){
+            Stdout.formatln("adding item");
+            menuItemStrings.add(stringcast((new Date()).toString()));
+            d.timerExec(5000, dgRunnable( &add, d, menuItemStrings ));
+        }
+        final Display display = new Display();
+        Realm.runWithDefault(SWTObservables.getRealm(display), dgRunnable( (Display display_) {
+            Shell shell = new Shell(display_);
 
-				final WritableList menuItemStrings = new WritableList();
-				display.asyncExec(new Runnable() {
-					public void run() {
-						System.out.println("adding item");
-						menuItemStrings.add(new Date().toString());
-						display.timerExec(5000, this);
-					}
-				});
+            final WritableList menuItemStrings = new WritableList();
+            display_.asyncExec(dgRunnable( &add, display_, menuItemStrings));
 
-				Menu bar = new Menu(shell, SWT.BAR);
-				shell.setMenuBar(bar);
-				MenuItem fileItem = new MenuItem(bar, SWT.CASCADE);
-				fileItem.setText("&Test Menu");
-				final Menu submenu = new Menu(shell, SWT.DROP_DOWN);
-				fileItem.setMenu(submenu);
-				new MenuUpdater(submenu) {
-					protected void updateMenu() {
-						System.out.println("updating menu");
-						MenuItem[] items = submenu.getItems();
-						int itemIndex = 0;
-						for (Iterator it = menuItemStrings.iterator(); it
-								.hasNext();) {
-							MenuItem item;
-							if (itemIndex < items.length) {
-								item = items[itemIndex++];
-							} else {
-								item = new MenuItem(submenu, SWT.NONE);
-							}
-							String string = (String) it.next();
-							item.setText(string);
-						}
-						while (itemIndex < items.length) {
-							items[itemIndex++].dispose();
-						}
-					}
-				};
+            Menu bar = new Menu(shell, SWT.BAR);
+            shell.setMenuBar(bar);
+            MenuItem fileItem = new MenuItem(bar, SWT.CASCADE);
+            fileItem.setText("&Test Menu");
+            final Menu submenu = new Menu(shell, SWT.DROP_DOWN);
+            fileItem.setMenu(submenu);
+            new class( submenu) MenuUpdater {
+                this( Menu m ){
+                    super(m);
+                }
+                protected void updateMenu() {
+                    Stdout.formatln("updating menu");
+                    MenuItem[] items = submenu.getItems();
+                    int itemIndex = 0;
+                    for (Iterator it = menuItemStrings.iterator(); it
+                            .hasNext();) {
+                        MenuItem item;
+                        if (itemIndex < items.length) {
+                            item = items[itemIndex++];
+                        } else {
+                            item = new MenuItem(submenu, SWT.NONE);
+                        }
+                        String string = stringcast( it.next());
+                        item.setText(string);
+                    }
+                    while (itemIndex < items.length) {
+                        items[itemIndex++].dispose();
+                    }
+                }
+            };
 
-				shell.open();
+            shell.open();
 
-				// The SWT event loop
-				while (!shell.isDisposed()) {
-					if (!display.readAndDispatch()) {
-						display.sleep();
-					}
-				}
-			}
-		});
-		display.dispose();
-	}
+            // The SWT event loop
+            while (!shell.isDisposed()) {
+                if (!display_.readAndDispatch()) {
+                    display_.sleep();
+                }
+            }
+        }, display));
+        display.dispose();
+    }
 }
+
+void main( String[] args ){
+    Snippet005MenuUpdater.main(args);
+}
+

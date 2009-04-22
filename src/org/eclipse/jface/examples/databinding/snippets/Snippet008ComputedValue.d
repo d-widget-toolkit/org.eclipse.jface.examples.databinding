@@ -10,7 +10,9 @@
  *     Matthew Hall - bug 260329
  ******************************************************************************/
 
-package org.eclipse.jface.examples.databinding.snippets;
+module org.eclipse.jface.examples.databinding.snippets.Snippet008ComputedValue;
+
+import java.lang.all;
 
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
@@ -37,133 +39,137 @@ import org.eclipse.swt.widgets.Text;
  * @since 3.2
  */
 public class Snippet008ComputedValue {
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		final Display display = new Display();
-		Realm.runWithDefault(SWTObservables.getRealm(display), new Runnable() {
-			public void run() {
-				Shell shell = new Shell(display);
-				shell.setLayout(new FillLayout());
+    /**
+     * @param args
+     */
+    public static void main(String[] args) {
+        final Display display = new Display();
+        Realm.runWithDefault(SWTObservables.getRealm(display), new Runnable() {
+            public void run() {
+                Shell shell = new Shell(display);
+                shell.setLayout(new FillLayout());
 
-				final UI ui = new UI(shell);
-				final Data data = new Data();
+                final UI ui = new UI(shell);
+                final Data data = new Data();
 
-				// Bind the UI to the Data.
-				DataBindingContext dbc = new DataBindingContext();
-				dbc.bindValue(SWTObservables.observeText(ui.firstName,
-						SWT.Modify), data.firstName);
-				dbc.bindValue(SWTObservables.observeText(ui.lastName,
-						SWT.Modify), data.lastName);
+                // Bind the UI to the Data.
+                DataBindingContext dbc = new DataBindingContext();
+                dbc.bindValue(SWTObservables.observeText(ui.firstName,
+                        SWT.Modify), data.firstName);
+                dbc.bindValue(SWTObservables.observeText(ui.lastName,
+                        SWT.Modify), data.lastName);
 
-				// Construct the formatted name observable.
-				FormattedName formattedName = new FormattedName(data.firstName,
-						data.lastName);
+                // Construct the formatted name observable.
+                FormattedName formattedName = new FormattedName(data.firstName,
+                        data.lastName);
 
-				// Bind the formatted name Text to the formatted name
-				// observable.
-				dbc.bindValue(SWTObservables.observeText(ui.formattedName,
-						SWT.None), formattedName, new UpdateValueStrategy(false, UpdateValueStrategy.POLICY_NEVER), null);
+                // Bind the formatted name Text to the formatted name
+                // observable.
+                dbc.bindValue(SWTObservables.observeText(ui.formattedName,
+                        SWT.None), formattedName, new UpdateValueStrategy(false, UpdateValueStrategy.POLICY_NEVER), null);
 
-				shell.pack();
-				shell.open();
-				while (!shell.isDisposed()) {
-					if (!display.readAndDispatch())
-						display.sleep();
-				}
-			}
-		});
-		display.dispose();
-	}
+                shell.pack();
+                shell.open();
+                while (!shell.isDisposed()) {
+                    if (!display.readAndDispatch())
+                        display.sleep();
+                }
+            }
+        });
+        display.dispose();
+    }
 
-	/**
-	 * Creates the formatted name on change of the first or last name
-	 * observables.
-	 * <p>
-	 * The key to understanding ComputedValue is understanding that it knows of
-	 * the observables that are queried without being told. This is done with
-	 * {@link ObservableTracker} voodoo. When calculate() is invoked
-	 * <code>ObservableTracker</code> records the observables that are
-	 * queried. It then exposes those observables and <code>ComputedValue</code>
-	 * can listen to changes in those objects and react accordingly.
-	 * </p>
-	 * 
-	 * @since 3.2
-	 */
-	static class FormattedName extends ComputedValue {
-		private IObservableValue firstName;
+    /**
+     * Creates the formatted name on change of the first or last name
+     * observables.
+     * <p>
+     * The key to understanding ComputedValue is understanding that it knows of
+     * the observables that are queried without being told. This is done with
+     * {@link ObservableTracker} voodoo. When calculate() is invoked
+     * <code>ObservableTracker</code> records the observables that are
+     * queried. It then exposes those observables and <code>ComputedValue</code>
+     * can listen to changes in those objects and react accordingly.
+     * </p>
+     * 
+     * @since 3.2
+     */
+    static class FormattedName extends ComputedValue {
+        private IObservableValue firstName;
 
-		private IObservableValue lastName;
+        private IObservableValue lastName;
 
-		FormattedName(IObservableValue firstName, IObservableValue lastName) {
-			this.firstName = firstName;
-			this.lastName = lastName;
-		}
+        FormattedName(IObservableValue firstName, IObservableValue lastName) {
+            this.firstName = firstName;
+            this.lastName = lastName;
+        }
 
-		protected Object calculate() {
-			String lastName = (String) this.lastName.getValue();
-			String firstName = (String) this.firstName.getValue();
-			lastName = (lastName != null && lastName.length() > 0) ? lastName
-					: "[Last Name]";
-			firstName = (firstName != null && firstName.length() > 0) ? firstName
-					: "[First Name]";
+        protected Object calculate() {
+            String lastName = (String) this.lastName.getValue();
+            String firstName = (String) this.firstName.getValue();
+            lastName = (lastName != null && lastName.length() > 0) ? lastName
+                    : "[Last Name]";
+            firstName = (firstName != null && firstName.length() > 0) ? firstName
+                    : "[First Name]";
 
-			StringBuffer buffer = new StringBuffer();
-			buffer.append(lastName).append(", ").append(firstName);
+            StringBuffer buffer = new StringBuffer();
+            buffer.append(lastName).append(", ").append(firstName);
 
-			return buffer.toString();
-		}
-	}
+            return buffer.toString();
+        }
+    }
 
-	static class Data {
-		final WritableValue firstName;
+    static class Data {
+        final WritableValue firstName;
 
-		final WritableValue lastName;
+        final WritableValue lastName;
 
-		Data() {
-			firstName = new WritableValue("", String.class);
-			lastName = new WritableValue("", String.class);
-		}
-	}
+        Data() {
+            firstName = new WritableValue("", String.class);
+            lastName = new WritableValue("", String.class);
+        }
+    }
 
-	/**
-	 * Composite that creates the UI.
-	 * 
-	 * @since 3.2
-	 */
-	static class UI extends Composite {
-		final Text firstName;
+    /**
+     * Composite that creates the UI.
+     * 
+     * @since 3.2
+     */
+    static class UI extends Composite {
+        final Text firstName;
 
-		final Text lastName;
+        final Text lastName;
 
-		final Text formattedName;
+        final Text formattedName;
 
-		UI(Composite parent) {
-			super(parent, SWT.NONE);
+        UI(Composite parent) {
+            super(parent, SWT.NONE);
 
-			GridLayoutFactory.swtDefaults().numColumns(2).applyTo(this);
+            GridLayoutFactory.swtDefaults().numColumns(2).applyTo(this);
 
-			new Label(this, SWT.NONE).setText("First Name:");
-			new Label(this, SWT.NONE).setText("Last Name");
+            new Label(this, SWT.NONE).setText("First Name:");
+            new Label(this, SWT.NONE).setText("Last Name");
 
-			GridDataFactory gdf = GridDataFactory.swtDefaults().align(SWT.FILL,
-					SWT.FILL).grab(true, false);
-			firstName = new Text(this, SWT.BORDER);
-			gdf.applyTo(firstName);
+            GridDataFactory gdf = GridDataFactory.swtDefaults().align(SWT.FILL,
+                    SWT.FILL).grab(true, false);
+            firstName = new Text(this, SWT.BORDER);
+            gdf.applyTo(firstName);
 
-			lastName = new Text(this, SWT.BORDER);
-			gdf.applyTo(lastName);
+            lastName = new Text(this, SWT.BORDER);
+            gdf.applyTo(lastName);
 
-			gdf = GridDataFactory.swtDefaults().span(2, 1).grab(true, false)
-					.align(SWT.FILL, SWT.BEGINNING);
-			Label label = new Label(this, SWT.NONE);
-			label.setText("Formatted Name:");
-			gdf.applyTo(label);
+            gdf = GridDataFactory.swtDefaults().span(2, 1).grab(true, false)
+                    .align(SWT.FILL, SWT.BEGINNING);
+            Label label = new Label(this, SWT.NONE);
+            label.setText("Formatted Name:");
+            gdf.applyTo(label);
 
-			formattedName = new Text(this, SWT.BORDER);
-			formattedName.setEditable(false);
-			gdf.applyTo(formattedName);
-		}
-	}
+            formattedName = new Text(this, SWT.BORDER);
+            formattedName.setEditable(false);
+            gdf.applyTo(formattedName);
+        }
+    }
+}
+
+void main( String[] args ){
+    Snippet008ComputedValue.main(args);
 }

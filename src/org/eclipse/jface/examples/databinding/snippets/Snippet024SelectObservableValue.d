@@ -10,7 +10,9 @@
  *     Matthew Hall - bug 260329
  ******************************************************************************/
 
-package org.eclipse.jface.examples.databinding.snippets;
+module org.eclipse.jface.examples.databinding.snippets.Snippet024SelectObservableValue;
+
+import java.lang.all;
 
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.observable.Realm;
@@ -34,90 +36,93 @@ import org.eclipse.swt.widgets.Shell;
  * @since 3.2
  */
 public class Snippet024SelectObservableValue {
-	protected Shell shell;
+    protected Shell shell;
 
-	public static void main(String[] args) {
-		final Display display = Display.getDefault();
-		Realm.runWithDefault(SWTObservables.getRealm(display), new Runnable() {
-			public void run() {
-				try {
-					Snippet024SelectObservableValue window = new Snippet024SelectObservableValue();
-					window.open();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+    public static void main(String[] args) {
+        final Display display = Display.getDefault();
+        Realm.runWithDefault(SWTObservables.getRealm(display), new Runnable() {
+            public void run() {
+                try {
+                    Snippet024SelectObservableValue window = new Snippet024SelectObservableValue();
+                    window.open();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
 
-	public void open() {
-		final Display display = Display.getDefault();
-		createContents();
-		shell.open();
-		shell.layout();
-		while (!shell.isDisposed()) {
-			if (!display.readAndDispatch())
-				display.sleep();
-		}
-	}
+    public void open() {
+        final Display display = Display.getDefault();
+        createContents();
+        shell.open();
+        shell.layout();
+        while (!shell.isDisposed()) {
+            if (!display.readAndDispatch())
+                display.sleep();
+        }
+    }
 
-	protected void createContents() {
-		shell = new Shell();
-		shell.setSize(400, 300);
-		shell.setLayout(new GridLayout(2, true));
-		shell.setText("Snippet024SelectObservableValue");
+    protected void createContents() {
+        shell = new Shell();
+        shell.setSize(400, 300);
+        shell.setLayout(new GridLayout(2, true));
+        shell.setText("Snippet024SelectObservableValue");
 
-		final ListViewer listViewer = new ListViewer(shell, SWT.BORDER);
-		listViewer.setContentProvider(new ArrayContentProvider());
-		listViewer.getList().setLayoutData(
-				new GridData(SWT.FILL, SWT.FILL, true, true));
+        final ListViewer listViewer = new ListViewer(shell, SWT.BORDER);
+        listViewer.setContentProvider(new ArrayContentProvider());
+        listViewer.getList().setLayoutData(
+                new GridData(SWT.FILL, SWT.FILL, true, true));
 
-		final Group group = new Group(shell, SWT.NONE);
-		group.setText("Radio Group");
-		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		group.setLayout(new GridLayout());
+        final Group group = new Group(shell, SWT.NONE);
+        group.setText("Radio Group");
+        group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        group.setLayout(new GridLayout());
 
-		// Data Binding
-		Color[] colors = Color.values();
+        // Data Binding
+        Color[] colors = Color.values();
 
-		listViewer.setInput(colors);
-		IViewerObservableValue listViewerSelection = ViewersObservables
-				.observeSingleSelection(listViewer);
+        listViewer.setInput(colors);
+        IViewerObservableValue listViewerSelection = ViewersObservables
+                .observeSingleSelection(listViewer);
 
-		SelectObservableValue radioGroup = new SelectObservableValue();
-		for (int i = 0; i < colors.length; i++) {
-			Button button = new Button(group, SWT.RADIO);
-			button.setText(colors[i].toString());
-			radioGroup.addOption(colors[i], SWTObservables
-					.observeSelection(button));
-		}
+        SelectObservableValue radioGroup = new SelectObservableValue();
+        for (int i = 0; i < colors.length; i++) {
+            Button button = new Button(group, SWT.RADIO);
+            button.setText(colors[i].toString());
+            radioGroup.addOption(colors[i], SWTObservables
+                    .observeSelection(button));
+        }
 
-		DataBindingContext dbc = new DataBindingContext();
-		dbc.bindValue(radioGroup, listViewerSelection);
-	}
+        DataBindingContext dbc = new DataBindingContext();
+        dbc.bindValue(radioGroup, listViewerSelection);
+    }
 
-	public static class Color {
-		public static final Color RED = new Color("Red");
-		public static final Color ORANGE = new Color("Orange");
-		public static final Color YELLOW = new Color("Yellow");
-		public static final Color GREEN = new Color("Green");
-		public static final Color BLUE = new Color("Blue");
-		public static final Color INDIGO = new Color("Indigo");
-		public static final Color VIOLET = new Color("Violet");
+    public static class Color {
+        public static final Color RED = new Color("Red");
+        public static final Color ORANGE = new Color("Orange");
+        public static final Color YELLOW = new Color("Yellow");
+        public static final Color GREEN = new Color("Green");
+        public static final Color BLUE = new Color("Blue");
+        public static final Color INDIGO = new Color("Indigo");
+        public static final Color VIOLET = new Color("Violet");
 
-		private final String name;
+        private final String name;
 
-		private Color(String name) {
-			this.name = name;
-		}
+        private Color(String name) {
+            this.name = name;
+        }
 
-		public String toString() {
-			return name;
-		}
+        public String toString() {
+            return name;
+        }
 
-		public static Color[] values() {
-			return new Color[] { RED, ORANGE, YELLOW, GREEN, BLUE, INDIGO,
-					VIOLET };
-		}
-	}
+        public static Color[] values() {
+            return new Color[] { RED, ORANGE, YELLOW, GREEN, BLUE, INDIGO,
+                    VIOLET };
+        }
+    }
+}
+void main( String[] args ){
+    Snippet024SelectObservableValue.main(args);
 }

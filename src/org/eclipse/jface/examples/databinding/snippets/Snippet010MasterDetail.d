@@ -10,7 +10,9 @@
  *     Matthew Hall - bug 260329
  ******************************************************************************/
 
-package org.eclipse.jface.examples.databinding.snippets;
+module org.eclipse.jface.examples.databinding.snippets.Snippet010MasterDetail;
+
+import java.lang.all;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -36,72 +38,75 @@ import org.eclipse.swt.widgets.Text;
  * be displayed in a Text widget.
  */
 public class Snippet010MasterDetail {
-	public static void main(String[] args) {
-		final Display display = new Display();
-		Realm.runWithDefault(SWTObservables.getRealm(display), new Runnable() {
-			public void run() {
-				Shell shell = new Shell(display);
-				shell.setLayout(new GridLayout());
+    public static void main(String[] args) {
+        final Display display = new Display();
+        Realm.runWithDefault(SWTObservables.getRealm(display), new Runnable() {
+            public void run() {
+                Shell shell = new Shell(display);
+                shell.setLayout(new GridLayout());
 
-				Person[] persons = new Person[] { new Person("Me"),
-						new Person("Myself"), new Person("I") };
+                Person[] persons = new Person[] { new Person("Me"),
+                        new Person("Myself"), new Person("I") };
 
-				ListViewer viewer = new ListViewer(shell);
-				viewer.setContentProvider(new ArrayContentProvider());
-				viewer.setInput(persons);
+                ListViewer viewer = new ListViewer(shell);
+                viewer.setContentProvider(new ArrayContentProvider());
+                viewer.setInput(persons);
 
-				Text name = new Text(shell, SWT.BORDER | SWT.READ_ONLY);
+                Text name = new Text(shell, SWT.BORDER | SWT.READ_ONLY);
 
-				// 1. Observe changes in selection.
-				IObservableValue selection = ViewersObservables
-						.observeSingleSelection(viewer);
+                // 1. Observe changes in selection.
+                IObservableValue selection = ViewersObservables
+                        .observeSingleSelection(viewer);
 
-				// 2. Observe the name property of the current selection.
-				IObservableValue detailObservable = BeansObservables
-						.observeDetailValue(selection, "name", String.class);
+                // 2. Observe the name property of the current selection.
+                IObservableValue detailObservable = BeansObservables
+                        .observeDetailValue(selection, "name", String.class);
 
-				// 3. Bind the Text widget to the name detail (selection's
-				// name).
-				new DataBindingContext().bindValue(SWTObservables.observeText(
-						name, SWT.None), detailObservable,
-						new UpdateValueStrategy(false,
-								UpdateValueStrategy.POLICY_NEVER), null);
+                // 3. Bind the Text widget to the name detail (selection's
+                // name).
+                new DataBindingContext().bindValue(SWTObservables.observeText(
+                        name, SWT.None), detailObservable,
+                        new UpdateValueStrategy(false,
+                                UpdateValueStrategy.POLICY_NEVER), null);
 
-				shell.open();
-				while (!shell.isDisposed()) {
-					if (!display.readAndDispatch())
-						display.sleep();
-				}
-			}
-		});
-		display.dispose();
-	}
+                shell.open();
+                while (!shell.isDisposed()) {
+                    if (!display.readAndDispatch())
+                        display.sleep();
+                }
+            }
+        });
+        display.dispose();
+    }
 
-	public static class Person {
-		private String name;
-		private PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
+    public static class Person {
+        private String name;
+        private PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
 
-		Person(String name) {
-			this.name = name;
-		}
+        Person(String name) {
+            this.name = name;
+        }
 
-		public void addPropertyChangeListener(PropertyChangeListener listener) {
-			changeSupport.addPropertyChangeListener(listener);
-		}
-		
-		public void removePropertyChangeListener(PropertyChangeListener listener) {
-			changeSupport.removePropertyChangeListener(listener);
-		}
-		
-		/**
-		 * @return Returns the name.
-		 */
-		public String getName() {
-			return name;
-		}
+        public void addPropertyChangeListener(PropertyChangeListener listener) {
+            changeSupport.addPropertyChangeListener(listener);
+        }
+        
+        public void removePropertyChangeListener(PropertyChangeListener listener) {
+            changeSupport.removePropertyChangeListener(listener);
+        }
+        
+        /**
+         * @return Returns the name.
+         */
+        public String getName() {
+            return name;
+        }
 
-		public String toString() {
-			return name;
-		}
-	}
+        public String toString() {
+            return name;
+        }
+    }
+}
+void main( String[] args ){
+    Snippet010MasterDetail.main(args);
 }

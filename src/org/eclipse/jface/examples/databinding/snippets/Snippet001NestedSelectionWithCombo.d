@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import org.eclipse.jface.viewers.Viewer;
 /**
  * Demonstrates nested selection.<br>
  * At the first level, user may select a person.<br>
@@ -61,8 +62,11 @@ public class Snippet001NestedSelectionWithCombo {
 
     // Minimal JavaBeans support
     public static abstract class AbstractModelObject {
-        private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(
+        private PropertyChangeSupport propertyChangeSupport;
+        this(){
+            propertyChangeSupport = new PropertyChangeSupport(
                 this);
+        }
 
         public void addPropertyChangeListener(PropertyChangeListener listener) {
             propertyChangeSupport.addPropertyChangeListener(listener);
@@ -114,7 +118,7 @@ public class Snippet001NestedSelectionWithCombo {
         public void setName(String name) {
             String oldValue = this.name;
             this.name = name;
-            firePropertyChange("name", oldValue, name);
+            firePropertyChange("name", stringcast(oldValue), stringcast(name));
         }
 
         public String getCity() {
@@ -124,7 +128,7 @@ public class Snippet001NestedSelectionWithCombo {
         public void setCity(String city) {
             String oldValue = this.city;
             this.city = city;
-            firePropertyChange("city", oldValue, city);
+            firePropertyChange("city", stringcast(oldValue), stringcast(city));
         }
     }
 
@@ -190,27 +194,27 @@ public class Snippet001NestedSelectionWithCombo {
             ListViewer peopleListViewer = new ListViewer(peopleList);
             IObservableMap attributeMap = BeansObservables.observeMap(
                     Observables.staticObservableSet(realm, new HashSet(
-                            viewModel.getPeople())), Class.formType!(Person), "name");
+                            viewModel.getPeople())), Class.fromType!(Person), "name");
             peopleListViewer.setLabelProvider(new ObservableMapLabelProvider(
                     attributeMap));
-            peopleListViewer.setContentProvider(new ArrayContentProvider());
+            peopleListViewer.setContentProvider(new ArrayContentProvider!(Object)());
             peopleListViewer.setInput(viewModel.getPeople());
 
             DataBindingContext dbc = new DataBindingContext(realm);
             IObservableValue selectedPerson = ViewersObservables
-                    .observeSingleSelection(peopleListViewer);
+                    .observeSingleSelection(cast(Viewer)peopleListViewer);
             dbc.bindValue(SWTObservables.observeText(name, SWT.Modify),
-                    BeansObservables.observeDetailValue(selectedPerson,
-                            "name", Class.fromType!(String)));
+                    BeansObservables.observeDetailValue(realm, selectedPerson,
+                            "name", Class.fromType!(String)), null, null);
 
             ComboViewer cityViewer = new ComboViewer(city);
-            cityViewer.setContentProvider(new ArrayContentProvider());
+            cityViewer.setContentProvider(new ArrayContentProvider!(Object)());
             cityViewer.setInput(viewModel.getCities());
 
             IObservableValue citySelection = ViewersObservables
-                    .observeSingleSelection(cityViewer);
-            dbc.bindValue(citySelection, BeansObservables.observeDetailValue(
-                    selectedPerson, "city", Class.fromType!(String)));
+                    .observeSingleSelection(cast(Viewer)cityViewer);
+            dbc.bindValue( citySelection, BeansObservables.observeDetailValue( realm,
+                    selectedPerson, "city", Class.fromType!(String)), null, null);
 
             GridLayoutFactory.swtDefaults().applyTo(shell);
             // Open and return the Shell

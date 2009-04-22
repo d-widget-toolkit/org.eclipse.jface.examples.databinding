@@ -4,11 +4,13 @@
  * accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors:
- * 		Matthew Hall - initial API and implementation (bug 180746)
- * 		Boris Bokowski, IBM - initial API and implementation
+ *      Matthew Hall - initial API and implementation (bug 180746)
+ *      Boris Bokowski, IBM - initial API and implementation
  *      Matthew Hall - bugs 260329, 264286
  ***********************************************************************************************************/
-package org.eclipse.jface.examples.databinding.snippets;
+module org.eclipse.jface.examples.databinding.snippets.Snippet015DelayTextModifyEvents;
+
+import java.lang.all;
 
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.observable.Observables;
@@ -34,86 +36,89 @@ import org.eclipse.swt.widgets.Text;
 
 public class Snippet015DelayTextModifyEvents {
 
-	private static void createControls(Shell shell) {
-		final Label field1 = createLabel(shell, SWT.NONE, "Field 1 ");
+    private static void createControls(Shell shell) {
+        final Label field1 = createLabel(shell, SWT.NONE, "Field 1 ");
 
-		Text text1 = new Text(shell, SWT.BORDER);
-		GridDataFactory.fillDefaults().grab(true, false).hint(200, SWT.DEFAULT)
-				.applyTo(text1);
-		createLabel(shell, SWT.NONE, "200ms delay");
+        Text text1 = new Text(shell, SWT.BORDER);
+        GridDataFactory.fillDefaults().grab(true, false).hint(200, SWT.DEFAULT)
+                .applyTo(text1);
+        createLabel(shell, SWT.NONE, "200ms delay");
 
-		final Label field2 = createLabel(shell, SWT.NONE, "Field 2 ");
+        final Label field2 = createLabel(shell, SWT.NONE, "Field 2 ");
 
-		Text text2 = new Text(shell, SWT.BORDER);
-		GridDataFactory.fillDefaults().grab(true, false).hint(200, SWT.DEFAULT)
-				.applyTo(text2);
+        Text text2 = new Text(shell, SWT.BORDER);
+        GridDataFactory.fillDefaults().grab(true, false).hint(200, SWT.DEFAULT)
+                .applyTo(text2);
 
-		createLabel(shell, SWT.NONE, "1000ms delay");
+        createLabel(shell, SWT.NONE, "1000ms delay");
 
-		final ISWTObservableValue delayed1 = WidgetProperties.text(SWT.Modify)
-				.observeDelayed(200, text1);
-		final ISWTObservableValue delayed2 = WidgetProperties.text(SWT.Modify)
-				.observeDelayed(1000, text2);
+        final ISWTObservableValue delayed1 = WidgetProperties.text(SWT.Modify)
+                .observeDelayed(200, text1);
+        final ISWTObservableValue delayed2 = WidgetProperties.text(SWT.Modify)
+                .observeDelayed(1000, text2);
 
-		// (In a real application,you would want to dispose the resource manager
-		// when you are done with it)
-		ResourceManager resourceManager = new LocalResourceManager(
-				JFaceResources.getResources());
-		final Font shellFont = shell.getFont();
-		final Font italicFont = resourceManager.createFont(FontDescriptor
-				.createFrom(shellFont).setStyle(SWT.ITALIC));
+        // (In a real application,you would want to dispose the resource manager
+        // when you are done with it)
+        ResourceManager resourceManager = new LocalResourceManager(
+                JFaceResources.getResources());
+        final Font shellFont = shell.getFont();
+        final Font italicFont = resourceManager.createFont(FontDescriptor
+                .createFrom(shellFont).setStyle(SWT.ITALIC));
 
-		final IObservableValue stale1 = Observables.observeStale(delayed1);
-		new ControlUpdater(field2) {
-			protected void updateControl() {
-				boolean stale = ((Boolean) stale1.getValue()).booleanValue();
-				field2.setFont(stale ? italicFont : shellFont);
-			}
-		};
+        final IObservableValue stale1 = Observables.observeStale(delayed1);
+        new ControlUpdater(field2) {
+            protected void updateControl() {
+                bool stale = ((bool) stale1.getValue()).booleanValue();
+                field2.setFont(stale ? italicFont : shellFont);
+            }
+        };
 
-		final IObservableValue stale2 = Observables.observeStale(delayed2);
-		new ControlUpdater(field1) {
-			protected void updateControl() {
-				boolean stale = ((Boolean) stale2.getValue()).booleanValue();
-				field1.setFont(stale ? italicFont : shellFont);
-			}
-		};
+        final IObservableValue stale2 = Observables.observeStale(delayed2);
+        new ControlUpdater(field1) {
+            protected void updateControl() {
+                bool stale = ((bool) stale2.getValue()).booleanValue();
+                field1.setFont(stale ? italicFont : shellFont);
+            }
+        };
 
-		String info = "Pending changes are applied immediately if the observed control loses focus";
-		GridDataFactory.fillDefaults().span(3, 1).applyTo(
-				createLabel(shell, SWT.WRAP, info));
+        String info = "Pending changes are applied immediately if the observed control loses focus";
+        GridDataFactory.fillDefaults().span(3, 1).applyTo(
+                createLabel(shell, SWT.WRAP, info));
 
-		DataBindingContext dbc = new DataBindingContext();
+        DataBindingContext dbc = new DataBindingContext();
 
-		dbc.bindValue(delayed1, delayed2);
-	}
+        dbc.bindValue(delayed1, delayed2);
+    }
 
-	private static Label createLabel(Composite parent, int style, String text) {
-		Label label = new Label(parent, style);
-		label.setText(text);
-		return label;
-	}
+    private static Label createLabel(Composite parent, int style, String text) {
+        Label label = new Label(parent, style);
+        label.setText(text);
+        return label;
+    }
 
-	public static void main(String[] args) {
-		final Display display = new Display();
+    public static void main(String[] args) {
+        final Display display = new Display();
 
-		Realm.runWithDefault(SWTObservables.getRealm(display), new Runnable() {
-			public void run() {
-				Shell shell = new Shell();
-				shell.setLayout(new GridLayout(3, false));
+        Realm.runWithDefault(SWTObservables.getRealm(display), new Runnable() {
+            public void run() {
+                Shell shell = new Shell();
+                shell.setLayout(new GridLayout(3, false));
 
-				createControls(shell);
+                createControls(shell);
 
-				shell.pack();
-				shell.open();
-				while (!shell.isDisposed())
-					if (!display.readAndDispatch())
-						display.sleep();
-			}
+                shell.pack();
+                shell.open();
+                while (!shell.isDisposed())
+                    if (!display.readAndDispatch())
+                        display.sleep();
+            }
 
-		});
+        });
 
-		display.dispose();
-	}
+        display.dispose();
+    }
 
+}
+void main( String[] args ){
+    Snippet015DelayTextModifyEvents.main(args);
 }

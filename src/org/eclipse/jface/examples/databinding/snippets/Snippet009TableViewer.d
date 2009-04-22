@@ -10,7 +10,9 @@
  *     Matthew Hall - bug 260337
  ******************************************************************************/
 
-package org.eclipse.jface.examples.databinding.snippets;
+module org.eclipse.jface.examples.databinding.snippets.Snippet009TableViewer;
+
+import java.lang.all;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -34,135 +36,139 @@ import org.eclipse.swt.widgets.TableColumn;
  * Demonstrates binding a TableViewer to a collection.
  */
 public class Snippet009TableViewer {
-	public static void main(String[] args) {
-		final Display display = Display.getDefault();
+    public static void main(String[] args) {
+        final Display display = Display.getDefault();
 
-		// In an RCP application, the threading Realm will be set for you
-		// automatically by the Workbench. In an SWT application, you can do
-		// this once, wrpping your binding method call.
-		Realm.runWithDefault(SWTObservables.getRealm(display), new Runnable() {
-			public void run() {
+        // In an RCP application, the threading Realm will be set for you
+        // automatically by the Workbench. In an SWT application, you can do
+        // this once, wrpping your binding method call.
+        Realm.runWithDefault(SWTObservables.getRealm(display), new Runnable() {
+            public void run() {
 
-				ViewModel viewModel = new ViewModel();
-				Shell shell = new View(viewModel).createShell();
+                ViewModel viewModel = new ViewModel();
+                Shell shell = new View(viewModel).createShell();
 
-				// The SWT event loop
-				while (!shell.isDisposed()) {
-					if (!display.readAndDispatch()) {
-						display.sleep();
-					}
-				}
-			}
-		});
-	}
+                // The SWT event loop
+                while (!shell.isDisposed()) {
+                    if (!display.readAndDispatch()) {
+                        display.sleep();
+                    }
+                }
+            }
+        });
+    }
 
-	// Minimal JavaBeans support
-	public static abstract class AbstractModelObject {
-		private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(
-				this);
+    // Minimal JavaBeans support
+    public static abstract class AbstractModelObject {
+        private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(
+                this);
 
-		public void addPropertyChangeListener(PropertyChangeListener listener) {
-			propertyChangeSupport.addPropertyChangeListener(listener);
-		}
+        public void addPropertyChangeListener(PropertyChangeListener listener) {
+            propertyChangeSupport.addPropertyChangeListener(listener);
+        }
 
-		public void addPropertyChangeListener(String propertyName,
-				PropertyChangeListener listener) {
-			propertyChangeSupport.addPropertyChangeListener(propertyName,
-					listener);
-		}
+        public void addPropertyChangeListener(String propertyName,
+                PropertyChangeListener listener) {
+            propertyChangeSupport.addPropertyChangeListener(propertyName,
+                    listener);
+        }
 
-		public void removePropertyChangeListener(PropertyChangeListener listener) {
-			propertyChangeSupport.removePropertyChangeListener(listener);
-		}
+        public void removePropertyChangeListener(PropertyChangeListener listener) {
+            propertyChangeSupport.removePropertyChangeListener(listener);
+        }
 
-		public void removePropertyChangeListener(String propertyName,
-				PropertyChangeListener listener) {
-			propertyChangeSupport.removePropertyChangeListener(propertyName,
-					listener);
-		}
+        public void removePropertyChangeListener(String propertyName,
+                PropertyChangeListener listener) {
+            propertyChangeSupport.removePropertyChangeListener(propertyName,
+                    listener);
+        }
 
-		protected void firePropertyChange(String propertyName, Object oldValue,
-				Object newValue) {
-			propertyChangeSupport.firePropertyChange(propertyName, oldValue,
-					newValue);
-		}
-	}
+        protected void firePropertyChange(String propertyName, Object oldValue,
+                Object newValue) {
+            propertyChangeSupport.firePropertyChange(propertyName, oldValue,
+                    newValue);
+        }
+    }
 
-	// The data model class. This is normally a persistent class of some sort.
-	static class Person extends AbstractModelObject {
-		// A property...
-		String name = "John Smith";
+    // The data model class. This is normally a persistent class of some sort.
+    static class Person extends AbstractModelObject {
+        // A property...
+        String name = "John Smith";
 
-		public Person(String name) {
-			this.name = name;
-		}
+        public Person(String name) {
+            this.name = name;
+        }
 
-		public String getName() {
-			return name;
-		}
+        public String getName() {
+            return name;
+        }
 
-		public void setName(String name) {
-			String oldValue = this.name;
-			this.name = name;
-			firePropertyChange("name", oldValue, name);
-		}
-	}
+        public void setName(String name) {
+            String oldValue = this.name;
+            this.name = name;
+            firePropertyChange("name", oldValue, name);
+        }
+    }
 
-	// The View's model--the root of our Model graph for this particular GUI.
-	//
-	// Typically each View class has a corresponding ViewModel class.
-	// The ViewModel is responsible for getting the objects to edit from the
-	// data access tier. Since this snippet doesn't have any persistent objects
-	// ro retrieve, this ViewModel just instantiates a model object to edit.
-	static class ViewModel {
-		// The model to bind
-		private List people = new LinkedList();
-		{
-			people.add(new Person("Steve Northover"));
-			people.add(new Person("Grant Gayed"));
-			people.add(new Person("Veronika Irvine"));
-			people.add(new Person("Mike Wilson"));
-			people.add(new Person("Christophe Cornu"));
-			people.add(new Person("Lynne Kues"));
-			people.add(new Person("Silenio Quarti"));
-		}
+    // The View's model--the root of our Model graph for this particular GUI.
+    //
+    // Typically each View class has a corresponding ViewModel class.
+    // The ViewModel is responsible for getting the objects to edit from the
+    // data access tier. Since this snippet doesn't have any persistent objects
+    // ro retrieve, this ViewModel just instantiates a model object to edit.
+    static class ViewModel {
+        // The model to bind
+        private List people = new LinkedList();
+        {
+            people.add(new Person("Steve Northover"));
+            people.add(new Person("Grant Gayed"));
+            people.add(new Person("Veronika Irvine"));
+            people.add(new Person("Mike Wilson"));
+            people.add(new Person("Christophe Cornu"));
+            people.add(new Person("Lynne Kues"));
+            people.add(new Person("Silenio Quarti"));
+        }
 
-		public List getPeople() {
-			return people;
-		}
-	}
+        public List getPeople() {
+            return people;
+        }
+    }
 
-	// The GUI view
-	static class View {
-		private ViewModel viewModel;
-		private Table committers;
+    // The GUI view
+    static class View {
+        private ViewModel viewModel;
+        private Table committers;
 
-		public View(ViewModel viewModel) {
-			this.viewModel = viewModel;
-		}
+        public View(ViewModel viewModel) {
+            this.viewModel = viewModel;
+        }
 
-		public Shell createShell() {
-			// Build a UI
-			Display display = Display.getDefault();
-			Shell shell = new Shell(display);
-			shell.setLayout(new FillLayout());
-			committers = new Table(shell, SWT.BORDER | SWT.FULL_SELECTION);
-			committers.setLinesVisible(true);
-			TableColumn column = new TableColumn(committers, SWT.NONE);
+        public Shell createShell() {
+            // Build a UI
+            Display display = Display.getDefault();
+            Shell shell = new Shell(display);
+            shell.setLayout(new FillLayout());
+            committers = new Table(shell, SWT.BORDER | SWT.FULL_SELECTION);
+            committers.setLinesVisible(true);
+            TableColumn column = new TableColumn(committers, SWT.NONE);
 
-			// Set up data binding.
-			TableViewer peopleViewer = new TableViewer(committers);
-			ViewerSupport.bind(peopleViewer, new WritableList(viewModel
-					.getPeople(), Person.class), BeanProperties.value(
-					Person.class, "name"));
+            // Set up data binding.
+            TableViewer peopleViewer = new TableViewer(committers);
+            ViewerSupport.bind(peopleViewer, new WritableList(viewModel
+                    .getPeople(), Person.class), BeanProperties.value(
+                    Person.class, "name"));
 
-			column.pack();
+            column.pack();
 
-			// Open and return the Shell
-			shell.setSize(100, 300);
-			shell.open();
-			return shell;
-		}
-	}
+            // Open and return the Shell
+            shell.setSize(100, 300);
+            shell.open();
+            return shell;
+        }
+    }
 
+}
+
+void main( String[] args ){
+    Snippet009TableViewer.main(args);
 }
