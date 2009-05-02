@@ -197,7 +197,7 @@ public class Snippet001NestedSelectionWithCombo {
                             viewModel.getPeople())), Class.fromType!(Person), "name");
             peopleListViewer.setLabelProvider(new ObservableMapLabelProvider(
                     attributeMap));
-            peopleListViewer.setContentProvider(new ArrayContentProvider!(Object)());
+            peopleListViewer.setContentProvider(new ArrayContentProvider());
             peopleListViewer.setInput(viewModel.getPeople());
 
             DataBindingContext dbc = new DataBindingContext(realm);
@@ -208,7 +208,7 @@ public class Snippet001NestedSelectionWithCombo {
                             "name", Class.fromType!(String)), null, null);
 
             ComboViewer cityViewer = new ComboViewer(city);
-            cityViewer.setContentProvider(new ArrayContentProvider!(Object)());
+            cityViewer.setContentProvider(new ArrayContentProvider());
             cityViewer.setInput(viewModel.getCities());
 
             IObservableValue citySelection = ViewersObservables
